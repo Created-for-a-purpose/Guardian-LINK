@@ -3,8 +3,20 @@
     "name": "Guardian-X",
     "description": "Guardian-X is a browser extension that helps you to protect your privacy and security while you are browsing the web.",
     "version": "1.0",
+    "permissions": [
+        "debugger",
+        "tabs",
+        "downloads"
+    ],
+    "devtools_page": "devtools.html",
+    "host_permissions": [
+        "https://www.google.com/*"
+    ],
+    "background": {
+        "service_worker": "guardian.js"
+    },
     "action": {
-        "default_popup": "guardian.html",
-        "default_icon": "guardian.png"
+        "default_icon": "guardian.png",
+        "default_popup": "devtools.html"
     }
 }
