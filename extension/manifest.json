@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "Guardian-X",
+    "description": "Guardian-X is a browser extension that helps you to protect your privacy and security while you are browsing the web.",
+    "version": "1.0",
+    "action": {
+        "default_popup": "guardian.html",
+        "default_icon": "guardian.png"
+    }
+}
