@@ -1,7 +1,23 @@
 let isOnTwitter = false;
 
+function queryTabs() {
+  chrome.tabs.query({active: true},
+    function(tab) {
+      console.log('tab', tab[0].url)
+      if(tab[0] && tab[0].url.startsWith('https://twitter.com/'))
+        isOnTwitter = true;
+      else isOnTwitter = false;
+    }
+  )
+}
+
+queryTabs();
+
+chrome.tabs.onActivated.addListener(queryTabs)
+
 chrome.webNavigation.onCompleted.addListener(
   function (obj) {
+    console.log('obj', obj.url)
     if (obj && obj.url.startsWith('https://twitter.com/'))
       isOnTwitter = true;
     else isOnTwitter = false;
