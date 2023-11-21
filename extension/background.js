@@ -1,4 +1,5 @@
 let isOnTwitter = false;
+let jsonData = null
 
 function queryTabs() {
   chrome.tabs.query({active: true},
@@ -29,5 +30,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     console.log('request.messageFromContent', request.messageFromContent)
     const status = isOnTwitter ? 'true' : 'false';
     chrome.runtime.sendMessage({ messageFromBackground: status });
+    chrome.runtime.sendMessage({ dataFromBackground: jsonData });
+  }
+  else if (request.messageFromDevTools) {
+    console.log('request.messageFromDevTools', request.messageFromDevTools)
+    jsonData = request.messageFromDevTools;
   }
 })

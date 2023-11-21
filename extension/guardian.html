@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>GuardianX</title>
-    </head>
-    <body>
+<head>
+    <meta charset="UTF-8">
+    <title>GuardianX</title>
+    <link rel="stylesheet" href="guardian.css">
+</head>
+
+<body>
+    <div class="header">
         <h1>Guardian X</h1>
-        <p>Capturing network traffic...</p>
+    </div>
+    <div id="content">
         <p id="status">Please navigate to x.com!</p>
-        <script src="guardian.js"></script>
-    </body> 
+        <div id="innerContent"></div>
+    </div>
+    <div class="footer">
+        <button id="downloadButton">Download</button>
+    </div>
+    <script src="guardian.js"></script>
+</body>
+
 </html>
