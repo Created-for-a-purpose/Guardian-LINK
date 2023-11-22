@@ -2,7 +2,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 100%;
     margin: 0 auto;
     padding: 0 20px;
     background: linear-gradient(to right, rgb(211, 233, 254), rgb(230, 242, 254), rgb(236, 246, 255));
@@ -33,7 +32,6 @@
     background: linear-gradient(to right, rgb(211, 233, 254), rgb(230, 242, 254), rgb(236, 246, 255));
     display: flex;
     justify-content: center;
-    max-width: 100%;
 }
 
 .title {
