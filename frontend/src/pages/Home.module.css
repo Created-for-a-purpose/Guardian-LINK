@@ -1,0 +1,14 @@
+.home{
+    margin-top: 2rem;
+    height: 32.7rem;
+}
+
+.post{
+    /* border-width: 1px; */
+    margin: 2rem;
+}
+
+.postHeader {
+    display: flex;
+    align-items: center;
+}

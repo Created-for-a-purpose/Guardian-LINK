@@ -1,0 +1,49 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+    background: linear-gradient(to right, rgb(211, 233, 254), rgb(230, 242, 254), rgb(236, 246, 255));
+    height: 4rem;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.navbar {
+    margin-top: 0.2rem;
+    margin-left: 37%;
+    width: max-content;
+    color: aqua;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbarcontent {
+    padding-right: 2rem;
+    padding-left: 2rem;
+    padding-bottom: 10px;
+}
+
+.header {
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(to right, rgb(211, 233, 254), rgb(230, 242, 254), rgb(236, 246, 255));
+    display: flex;
+    justify-content: center;
+    max-width: 100%;
+}
+
+.title {
+    width: 77%;
+    margin-left: 12%;
+    margin-top: 0.5rem;
+}
+
+.logo{
+    width: 6%;
+    margin-right: 90%;
+    position: absolute;
+}
