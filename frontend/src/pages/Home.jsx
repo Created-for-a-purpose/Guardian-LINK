@@ -3,10 +3,10 @@ import styles from './Home.module.css'
 import { Card, Tag, Profile, Typography } from '@ensdomains/thorin';
 import { CheckCircleSVG, HeartActiveSVG, EnvelopeSVG, AeroplaneSVG, RightArrowSVG } from '@ensdomains/thorin';
 
-function Home() {
+function Home({ theme, setTheme }) {
     return (
         <>
-            <Navbar />
+            <Navbar theme={theme} setTheme={setTheme} />
             <div className={styles.home}>
                 <Card className={styles.post}>
                     <div className={styles.postHeader}>

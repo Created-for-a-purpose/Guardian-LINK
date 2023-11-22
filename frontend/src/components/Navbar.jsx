@@ -1,9 +1,10 @@
 import styles from './Navbar.module.css'
 import logo from '../images/logo.svg'
-import { Typography, Button, Heading, Profile } from '@ensdomains/thorin';
+import { useState } from 'react';
+import { Typography, Button, Heading, Profile, lightTheme, darkTheme } from '@ensdomains/thorin';
 import { DotGridSVG, EthSVG, PersonSVG, HouseSVG, MagnifyingGlassActiveSVG, MoonSVG } from '@ensdomains/thorin';
 
-function Navbar() { 
+function Navbar({ theme, setTheme }) { 
   return (
     <>
     <div className={styles.header}>
@@ -13,7 +14,7 @@ function Navbar() {
         <Profile ensName='0x123...456'
          dropdownItems={[
              { label: 'Dashboard', onClick: () => null, icon: <DotGridSVG /> },
-             { label: 'Dark Mode', onClick: () => null, icon: <MoonSVG />}
+             { label: theme===lightTheme?'Dark Mode':'Light Mode', onClick: () => theme===lightTheme?setTheme(darkTheme):setTheme(lightTheme), icon: <MoonSVG />}
              ]}/>
     </div>
     <div className={styles.container}>
