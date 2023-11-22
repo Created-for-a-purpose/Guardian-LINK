@@ -40,6 +40,7 @@ chrome.devtools.inspectedWindow.eval("window.location.href", function (result, i
       alert('Guardian-X will load your network HAR now..')
       preprocess(request)
       chrome.runtime.sendMessage({ messageFromDevTools: data })
+      alert('Done! You can close DevTools now.')
     })
   }
 })
