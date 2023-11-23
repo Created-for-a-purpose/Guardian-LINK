@@ -9,7 +9,7 @@ function Dashboard() {
       <Navbar />
       <div className="dashboard">
         <Card className="dashboard_card" style={{background: 'linear-gradient(to right, rgb(200, 203, 255), rgb(255, 237, 255))'}}>
-          <Banner title="Dashboard" onClick={()=>null}/>
+          <Banner title="About" onClick={()=>null}/>
           <Banner title="Get DNS" onClick={()=>null}/>
           <Banner title="Avatar NFT" onClick={()=>null}/>
           <Banner title="..." onClick={()=>null}/>
@@ -23,8 +23,8 @@ function Dashboard() {
             <Typography fontVariant="extraLarge" style={{marginTop:'2rem', margin: '2rem'}}>
               <PersonSVG/> &nbsp;Your DNS: &nbsp;<QuestionCircleSVG/></Typography>
           </div>
-          <Banner iconType="normal" title="Create your first content!" 
-          style={{width: '30%', marginLeft: '30%', marginTop: '2rem', textAlign: 'center'}}/>
+          <Banner iconType="normal" title="Don't forget to mint your Avatar NFT!" 
+          style={{width: '38%', marginLeft: '30%', marginTop: '2rem', textAlign: 'center'}}/>
         </Card>
       </div>
     </>
