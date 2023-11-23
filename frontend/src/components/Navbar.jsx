@@ -4,8 +4,10 @@ import { Typography, Heading, Profile, lightTheme, darkTheme } from '@ensdomains
 import { DotGridSVG, PersonSVG, HouseSVG, MagnifyingGlassActiveSVG, MoonSVG } from '@ensdomains/thorin';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar({ theme, setTheme }) {
+    const navigate = useNavigate();
     const account = useAccount();
     return (
         <>
@@ -15,7 +17,7 @@ function Navbar({ theme, setTheme }) {
                     Guardian-LINK</Heading>
                 <Profile ensName={account&&account.address?account.address:'...'}
                     dropdownItems={[
-                        { label: 'Dashboard', onClick: () => null, icon: <DotGridSVG /> },
+                        { label: 'Dashboard', onClick: () => navigate('/dashboard'), icon: <DotGridSVG /> },
                         { label: theme === lightTheme ? 'Dark Mode' : 'Light Mode', onClick: () => theme === lightTheme ? setTheme(darkTheme) : setTheme(lightTheme), icon: <MoonSVG /> }
                     ]} />
             </div>

@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import FhePay from "../components/FhePay";
-import { Card, Typography, Heading, Avatar, Button } from "@ensdomains/thorin";
+import { Card, Typography, Avatar, Button, AeroplaneSVG, EnvelopeSVG } from "@ensdomains/thorin";
 import { CopySVG, HeartActiveSVG, LinkSVG } from "@ensdomains/thorin";
 import "./Profile.css"
 
@@ -22,8 +22,8 @@ function Profile() {
                             <Typography fontVariant="extraLargeBold">friend.eth&nbsp;</Typography>
                             <CopySVG />
                         </div>
-                        <Typography style={{marginLeft: '1rem', marginTop:'0.5rem'}} fontVariant="extraSmall">
-                           <LinkSVG/> Links: 1k
+                        <Typography style={{ marginLeft: '1rem', marginTop: '0.5rem' }} fontVariant="extraSmall">
+                            <LinkSVG /> &nbsp;Links: 1k
                         </Typography>
                     </div>
                     <div className="profile_buttons">
@@ -33,25 +33,35 @@ function Profile() {
                         <FhePay ens={'friend.eth'} />
                     </div>
                 </div>
-                <Typography fontVariant="extraLargeBold" style={{marginLeft: '2rem', marginTop: '2rem'}}>Latest content</Typography>
+                <Typography fontVariant="extraLargeBold" style={{ marginLeft: '2rem', marginTop: '2rem' }}>Latest content</Typography>
                 <Card className="profile_post">
                     <Typography>
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti quaerat eveniet odit, officiis a laborum magni? Voluptatibus similique mollitia, necessitatibus, aliquid quas nulla officiis, pariatur deleniti consectetur debitis vero iure?
                     </Typography>
-                    <Typography fontVariant="extraSmall">today</Typography>
+                    <Typography fontVariant="extraSmall">Today</Typography>
+                    <Card.Divider />
                     <div className="post_footer">
-                        <HeartActiveSVG />
-                        <Typography fontVariant="extraSmall">12</Typography>
+                        <HeartActiveSVG style={{ color: 'red' }} />
+                        <Typography fontVariant="extraSmall">12&nbsp;&nbsp;</Typography>
+                        <EnvelopeSVG style={{ color: 'blue' }} />
+                        <Typography fontVariant="extraSmall">7&nbsp;&nbsp;</Typography>
+                        <AeroplaneSVG style={{ color: 'green' }} />
+                        <Typography fontVariant="extraSmall">2</Typography>
                     </div>
                 </Card>
                 <Card className="profile_post">
                     <Typography>
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti quaerat eveniet odit, officiis a laborum magni? Voluptatibus similique mollitia, necessitatibus, aliquid quas nulla officiis, pariatur deleniti consectetur debitis vero iure?
                     </Typography>
-                    <Typography fontVariant="extraSmall">today</Typography>
+                    <Typography fontVariant="extraSmall">2 days ago</Typography>
+                    <Card.Divider />
                     <div className="post_footer">
-                        <HeartActiveSVG />
-                        <Typography fontVariant="extraSmall">12</Typography>
+                        <HeartActiveSVG style={{ color: 'red' }} />
+                        <Typography fontVariant="extraSmall">13&nbsp;&nbsp;</Typography>
+                        <EnvelopeSVG style={{ color: 'blue' }} />
+                        <Typography fontVariant="extraSmall">6&nbsp;&nbsp;</Typography>
+                        <AeroplaneSVG style={{ color: 'green' }} />
+                        <Typography fontVariant="extraSmall">1</Typography>
                     </div>
                 </Card>
             </div>

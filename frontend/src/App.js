@@ -2,6 +2,7 @@ import { ThemeProvider } from 'styled-components'
 import { ThorinGlobalStyles, lightTheme } from '@ensdomains/thorin'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
+import Dashboard from './pages/Dashboard'
 import { useState } from 'react';
 import { Routes, Route } from "react-router-dom"
 
@@ -47,6 +48,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home theme={theme} setTheme={setTheme} />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </ThemeProvider>
       </RainbowKitProvider>

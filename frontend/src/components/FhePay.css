@@ -1,3 +1,29 @@
-.dialog_button{
-    width: 100px;
+.dialog{
+    width: 35%;
+    height: 89%;
+}
+
+.options{
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-right: 4rem;
+}
+.balance_container{
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.decrypt{
+    margin-top:2px;
+    color: purple;
+}
+.decrypt:hover{
+    cursor: pointer;
+    color: blue;
+}
+
+.balance{
+    width: 75%;
 }
