@@ -14,7 +14,7 @@ function Home({ theme, setTheme }) {
                     dropdownItems={[
                         {label: 'Go to Profile', onClick: () => alert('Go to Profile'), icon: <RightArrowSVG/>},
                     ]}/>
-                    <Tag colorStyle="bluePrimary"><CheckCircleSVG/>&nbsp;&nbsp;Verified</Tag>
+                    <Tag colorStyle="blueGradient"><CheckCircleSVG/>&nbsp;&nbsp;Verified</Tag>
                     </div>
                     <Typography>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit.

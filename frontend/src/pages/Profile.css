@@ -1,0 +1,42 @@
+.profile_container{
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 20px;
+    height: 44vw;
+    background-color: rgb(221, 221, 255);
+}
+
+.profile_header{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.profile_post{
+    background-color: rgb(201, 201, 255);
+    margin: 1rem;
+}
+
+.post_footer{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile_buttons{
+    margin-left: 7rem;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 2rem;
+}
+
+.profile_details{
+    display: flex;
+    gap:0.5rem;
+    justify-content: left;
+    align-items: center;
+    margin-left: 1rem;
+}

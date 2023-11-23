@@ -1,6 +1,11 @@
+body{
+    background: linear-gradient(to right, rgb(200, 203, 255), rgb(255, 237, 255));
+}
+
 .home{
     margin-top: 2rem;
     height: 32.7rem;
+    background: linear-gradient(to right, rgb(200, 203, 255), rgb(255, 237, 255));
 }
 
 .post{

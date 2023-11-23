@@ -1,7 +1,9 @@
 import { ThemeProvider } from 'styled-components'
 import { ThorinGlobalStyles, lightTheme } from '@ensdomains/thorin'
 import Home from './pages/Home'
+import Profile from './pages/Profile'
 import { useState } from 'react';
+import { Routes, Route } from "react-router-dom"
 
 import '@rainbow-me/rainbowkit/styles.css';
 import {
@@ -34,7 +36,7 @@ function App() {
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains} modalSize="compact" coolMode showRecentTransactions={true}
         theme={lt({
-          accentColor: 'rgb(173,70,213)',
+          accentColor: 'rgb(140,70,213)',
           accentColorForeground: 'white',
           borderRadius: 'medium',
           fontStack: 'system',
@@ -42,7 +44,10 @@ function App() {
         })}>
         <ThemeProvider theme={theme}>
           <ThorinGlobalStyles />
-          <Home theme={theme} setTheme={setTheme} />
+          <Routes>
+            <Route path="/" element={<Home theme={theme} setTheme={setTheme} />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
         </ThemeProvider>
       </RainbowKitProvider>
     </WagmiConfig>

@@ -21,13 +21,13 @@ function Navbar({ theme, setTheme }) {
             </div>
             <div className={styles.container}>
                 <nav className={styles.navbar}>
-                    <a className={styles.navbarcontent} href="/home">
+                    <a className={styles.navbarcontent} href="/profile">
                         <Typography color='purple' font='large'> <PersonSVG /> Profile</Typography>
                     </a>
                     <a className={styles.navbarcontent} href="/">
                         <Typography color='purple' font='large'><HouseSVG /> Home</Typography>
                     </a>
-                    <a className={styles.navbarcontent} href="/">
+                    <a className={styles.navbarcontent} href="/search">
                         <Typography color='purple' font='large'><MagnifyingGlassActiveSVG /> Search</Typography>
                     </a>
                 </nav>
