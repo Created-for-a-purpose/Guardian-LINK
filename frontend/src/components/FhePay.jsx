@@ -1,7 +1,7 @@
 import "./FhePay.css"
 import { UsdcSVG, DaiSVG, FujiSVG, MumbaiSVG } from "./CustomSVG"
-import { Button, Dialog, Typography, Helper, Input, Select, Banner, Tooltip } from "@ensdomains/thorin";
-import { EthTransparentSVG, EyeStrikethroughSVG, EyeSVG, WalletSVG, AeroplaneSVG } from "@ensdomains/thorin";
+import { Button, Dialog, Typography, Helper, Input, Select, Banner } from "@ensdomains/thorin";
+import { EthTransparentSVG, EyeStrikethroughSVG, EyeSVG, WalletSVG, AeroplaneSVG, LockSVG } from "@ensdomains/thorin";
 import { useState } from "react";
 
 function FhePay({ ens }) {
