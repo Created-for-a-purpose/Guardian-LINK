@@ -1,7 +1,7 @@
 import "./FhePay.css"
 import { UsdcSVG, DaiSVG, FujiSVG, MumbaiSVG } from "./CustomSVG"
 import { Button, Dialog, Typography, Helper, Input, Select, Banner } from "@ensdomains/thorin";
-import { EthTransparentSVG, EyeStrikethroughSVG, EyeSVG, WalletSVG, AeroplaneSVG, LockSVG } from "@ensdomains/thorin";
+import { EthTransparentSVG, EyeStrikethroughSVG, EyeSVG, WalletSVG, AeroplaneSVG } from "@ensdomains/thorin";
 import { useState } from "react";
 
 function FhePay({ ens }) {
@@ -33,9 +33,9 @@ function FhePay({ ens }) {
                             Your balance: 725654469346795767 USDC
                         </div>
                         <div style={{display: 'flex', alignItems:'center', gap:'10px'}}>
-                        {isEncrypted ? (<EyeStrikethroughSVG className="decrypt" shouldShowTooltipIndicator
+                        {isEncrypted ? (<EyeSVG className="decrypt" shouldShowTooltipIndicator
                             onClick={() => setIsEncrypted(!isEncrypted)} />) :
-                            (<EyeSVG className="decrypt" shouldShowTooltipIndicator
+                            (<EyeStrikethroughSVG className="decrypt" shouldShowTooltipIndicator
                                 onClick={() => setIsEncrypted(!isEncrypted)} />)}
                         <Typography fontVariant="extraSmall">{isEncrypted?(`(Reveal)`):(`(Conceal)`)}</Typography>
                         </div>
