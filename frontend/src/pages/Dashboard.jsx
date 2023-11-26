@@ -10,7 +10,7 @@ import { dbUser } from "../utils/polybase"
 
 function Dashboard() {
   const [state, setState] = useState("about");
-  const [hasGenerated, setHasGenerated] = useState(false); 
+  const [hasGenerated, setHasGenerated] = useState(false);
   const [generateLoading, setGenerateLoading] = useState('not-loading');
   const getGenerateLoading = _state => _state === generateLoading;
   const LIGHTHOUSE_API_KEY = '8b8298ac.940174d0ee014e158ff730056ce793cc'
@@ -35,8 +35,8 @@ function Dashboard() {
       return;
     }
     const data = await response.json();
-    const secret_payload = JSON.stringify({sk: data.sk});
-    const public_payload = JSON.stringify({pk: data.pk});
+    const secret_payload = JSON.stringify({ sk: data.sk });
+    const public_payload = JSON.stringify({ pk: data.pk });
     const auth_message = await fetch(`https://encryption.lighthouse.storage/api/message/${account.address}`)
     const auth_response = await auth_message.json()
     const message = auth_response[0].message
@@ -72,12 +72,12 @@ function Dashboard() {
             <Heading level="2" color="purple" className="about_heading"><KeySVG style={{ color: "yellow" }} /> Generate your payment keys</Heading>
             <Banner icon={<LockSVG />} iconType="filledCircle" title="This is a one-time step" style={{ backgroundColor: "rgb(230, 242, 254)" }}>
               All keys generated are non-custodial.</Banner>
-            { !hasGenerated ? (<Button width="45" colorStyle="purpleGradient" className="about_button" onClick={generate}
-              disabled={getGenerateLoading('loading')} loading={getGenerateLoading('loading')}>Generate</Button>):(
-                <Banner icon={<CheckSVG style={{color: 'green'}}/>} title="Great! You have generated your keys" style={{ backgroundColor: "rgb(230, 242, 254)"}}>
-                  <p>You can now use your keys to make private transactions.</p>
-                </Banner>
-              )}
+            {!hasGenerated ? (<Button width="45" colorStyle="purpleGradient" className="about_button" onClick={generate}
+              disabled={getGenerateLoading('loading')} loading={getGenerateLoading('loading')}>Generate</Button>) : (
+              <Banner icon={<CheckSVG style={{ color: 'green' }} />} title="Great! You have generated your keys" style={{ backgroundColor: "rgb(230, 242, 254)" }}>
+                <p>You can now use your keys to make private transactions.</p>
+              </Banner>
+            )}
           </Card>
         </>}
 
