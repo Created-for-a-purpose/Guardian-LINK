@@ -1,18 +1,30 @@
 import "./Dashboard.css";
 import Navbar from "../components/Navbar";
-import { Card, Banner, Avatar, Typography, Helper, Heading, LockSVG, Button } from "@ensdomains/thorin";
-import { PersonSVG, QuestionCircleSVG, KeySVG } from "@ensdomains/thorin";
-import { useState } from "react";
+import { Card, Banner, Avatar, Typography, Helper, Heading, Button } from "@ensdomains/thorin";
+import { PersonSVG, QuestionCircleSVG, KeySVG, LockSVG, CheckSVG } from "@ensdomains/thorin";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { signMessage } from "@wagmi/core";
 import lighthouse from '@lighthouse-web3/sdk'
+import { dbUser } from "../utils/polybase"
 
 function Dashboard() {
   const [state, setState] = useState("about");
+  const [hasGenerated, setHasGenerated] = useState(false); 
   const [generateLoading, setGenerateLoading] = useState('not-loading');
   const getGenerateLoading = _state => _state === generateLoading;
-  const LIGHTHOUSE_API_KEY = 'QmSRetZVKvMJVbt1rgv1tDXtyMzkcnSDpfoJqGSPhrJoCx'
+  const LIGHTHOUSE_API_KEY = '8b8298ac.940174d0ee014e158ff730056ce793cc'
   const account = useAccount();
+
+  useEffect(() => {
+    const check = async () => {
+      const user = await dbUser.record(account.address).get()
+      if (user.data) {
+        setHasGenerated(true)
+      }
+    }
+    check()
+  }, [hasGenerated]);
 
   const generate = async () => {
     setGenerateLoading('loading');
@@ -37,9 +49,9 @@ function Dashboard() {
       account.address,
       signedMessage,
     );
-
+    // cid of encrypted secret key
     console.log(lighthouseResponse);
-
+    await dbUser.create([account.address, public_payload, lighthouseResponse])
     setGenerateLoading('not-loading');
   }
 
@@ -60,8 +72,12 @@ function Dashboard() {
             <Heading level="2" color="purple" className="about_heading"><KeySVG style={{ color: "yellow" }} /> Generate your payment keys</Heading>
             <Banner icon={<LockSVG />} iconType="filledCircle" title="This is a one-time step" style={{ backgroundColor: "rgb(230, 242, 254)" }}>
               All keys generated are non-custodial.</Banner>
-            <Button width="45" colorStyle="purpleGradient" className="about_button" onClick={generate}
-              disabled={getGenerateLoading('loading')} loading={getGenerateLoading('loading')}>Generate</Button>
+            { !hasGenerated ? (<Button width="45" colorStyle="purpleGradient" className="about_button" onClick={generate}
+              disabled={getGenerateLoading('loading')} loading={getGenerateLoading('loading')}>Generate</Button>):(
+                <Banner icon={<CheckSVG style={{color: 'green'}}/>} title="Great! You have generated your keys" style={{ backgroundColor: "rgb(230, 242, 254)"}}>
+                  <p>You can now use your keys to make private transactions.</p>
+                </Banner>
+              )}
           </Card>
         </>}
 
