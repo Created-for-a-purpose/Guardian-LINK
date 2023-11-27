@@ -17,6 +17,7 @@ function FhePay({ ens }) {
 
     const [isEncrypted, setIsEncrypted] = useState(true)
     const [balance, setBalance] = useState(0)
+    const [decryptedBalance, setDecryptedBalance] = useState('')
 
     useEffect(() => {
         async function getBalance() {
@@ -36,7 +37,7 @@ function FhePay({ ens }) {
             }
         }
         getBalance()
-    }, [state])
+    }, [state, address])
 
     const encryptionSignature = async () => {
         const messageRequested = (await lighthouse.getAuthMessage(address)).data.message;
@@ -55,23 +56,32 @@ function FhePay({ ens }) {
             signedMessage
         );
         const decrypted = await lighthouse.decryptFile(cid, keyObject?.data?.key);
-        // const file = new File([decrypted], 'file.text', { type: 'text/plain' });
-        const url = URL.createObjectURL(decrypted);
-        return url
+        const reader = new FileReader();
+        reader.readAsText(decrypted);
+        return new Promise((resolve, reject) => {
+            reader.onload = () => {
+                const skey = JSON.parse(reader.result);
+                resolve(skey?.sk);
+            };
+            reader.onerror = reject;
+        });
     }
 
     const decrypt = async () => {
         if (balance === 0) return
-        const url = 'http://localhost:8000/decrypt';
         const userData = await dbUser.record(address).get()
         const skeyPayload = JSON.parse(userData?.data?.skey)
         const skey_cid = skeyPayload?.data?.Hash
         const skey = await getSecretKey(skey_cid)
-        console.log('skey', skey)
-        return
-        const key = []
-        const ciphertext = []
+        const ciphertext = await readContract({
+            address: usdcFuji,
+            abi: usdcAbi,
+            functionName: "getFheBalance",
+            args: [address]
+        })
+        const cipher = new Uint8Array(ciphertext.cipher.map(Number))
 
+        const url = 'http://localhost:8000/decrypt';
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -79,10 +89,12 @@ function FhePay({ ens }) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    key,
-                    ciphertext
+                    "key": skey,
+                    "ciphertext": Array.from(cipher)
                 }),
             });
+            const decryptedBalance = await response.json();
+            setDecryptedBalance(decryptedBalance[0])
         }
         catch (err) {
             console.log(err)
@@ -93,6 +105,15 @@ function FhePay({ ens }) {
 
     const conceal = async () => {
         if (balance === 0) return
+        const bal = await readContract({
+            address: usdcFuji,
+            abi: usdcAbi,
+            functionName: "balanceOf",
+            args: [address]
+        })
+        if (bal?.toString() !== "0")
+            setBalance(bal?.toString().slice(0, 18))
+        else setBalance(bal?.toString())
         setIsEncrypted(!isEncrypted)
     }
 
@@ -119,7 +140,7 @@ function FhePay({ ens }) {
                 <Banner alert="warning" iconType={"none"}>
                     <div className="balance_container">
                         <div className="balance">
-                            Your balance: {balance} USDC
+                            Your balance: {isEncrypted||decryptedBalance===''?balance:decryptedBalance} USDC
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             {isEncrypted ? (<EyeSVG className="decrypt" shouldShowTooltipIndicator
