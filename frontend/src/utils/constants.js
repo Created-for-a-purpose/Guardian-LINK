@@ -1,5 +1,5 @@
-export const usdcFuji = "0x25ABE8832911c81a4415087d6d27ebd5B7975921"
-export const usdcMumbai = "0x6cD0613315B2602F33001c1CD18dE8313c565E8e"
+export const usdcFuji = "0x7cD40F7b76CE58DC28324270c35A54c9d9A1C4f2"
+export const usdcMumbai = "0xC2d6130c156fC425bb6310a24827772F6035d759"
 export const usdcAbi = [
     {
         "inputs": [],
@@ -405,6 +405,72 @@ export const usdcAbi = [
     {
         "inputs": [
             {
+                "internalType": "bool",
+                "name": "receipient",
+                "type": "bool"
+            },
+            {
+                "internalType": "address",
+                "name": "entity",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "cipher_sender",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "cipher_recipient",
+                "type": "uint256[]"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "bool",
+                        "name": "RISC0_DEV_MODE",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "seal",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "imageId",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "postStateDigest",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "journalHash",
+                        "type": "bytes32"
+                    }
+                ],
+                "internalType": "struct USDCmock.guestReceipt",
+                "name": "receipt",
+                "type": "tuple"
+            }
+        ],
+        "name": "transferCrosschain",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "sender",
                 "type": "address"
@@ -618,8 +684,8 @@ export const usdcAbi = [
     }
 ]
 
-export const ccipGuardianFuji = "0xC584207ECfb0D9441E8d66a328fAc2D7E364E081"
-export const ccipGuardianMumbai = "0xa56668ce197d2d489AB14E5Bb2Ca99c5C323fE5e"
+export const ccipGuardianFuji = "0x61a10eCE9c85c9bbC56C5f0a145E5a8d5f87e6d4"
+export const ccipGuardianMumbai = "0x2eDE51011AdAf29e7312dE02Db1cAaDFeAa97D27"
 export const ccipGuardianAbi = [
     {
         "inputs": [
@@ -634,7 +700,7 @@ export const ccipGuardianAbi = [
                 "type": "address"
             }
         ],
-        "stateMutability": "nonpayable",
+        "stateMutability": "payable",
         "type": "constructor"
     },
     {
@@ -785,6 +851,19 @@ export const ccipGuardianAbi = [
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "name",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "bytes4",
@@ -802,5 +881,9 @@ export const ccipGuardianAbi = [
         ],
         "stateMutability": "pure",
         "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
     }
 ]

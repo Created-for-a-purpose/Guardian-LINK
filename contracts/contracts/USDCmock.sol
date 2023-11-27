@@ -71,6 +71,36 @@ contract USDCmock is IERC20, RiscZeroGroth16Verifier, Ownable {
         return true;
     }
 
+    function transferCrosschain(
+        bool receipient,
+        address entity,
+        uint256[] calldata cipher_sender,
+        uint256[] calldata cipher_recipient,
+        guestReceipt calldata receipt
+    ) external returns (bool) {
+        require(
+            receipt.RISC0_DEV_MODE ||
+                verify(
+                    receipt.seal,
+                    receipt.imageId,
+                    receipt.postStateDigest,
+                    receipt.journalHash
+                ),
+            "Invalid receipt!"
+        );
+        if (receipient) {
+            uint256 uintRep_recipient = getUintRep(cipher_recipient);
+            fheBalances[entity].cipher = cipher_recipient;
+            fheBalances[entity].uintRep = uintRep_recipient;
+            return true;
+        }
+        uint256 uintRep_sender = getUintRep(cipher_sender);
+        fheBalances[entity].cipher = cipher_sender;
+        fheBalances[entity].uintRep = uintRep_sender;
+
+        return true;
+    }
+
     function totalSupply() external view returns (uint256) {
         return _totalSupply;
     }

@@ -3,16 +3,17 @@ import { UsdcSVG, DaiSVG, FujiSVG, MumbaiSVG } from "./CustomSVG"
 import { Button, Dialog, Typography, Helper, Input, Select, Banner } from "@ensdomains/thorin";
 import { EthTransparentSVG, EyeStrikethroughSVG, EyeSVG, WalletSVG, AeroplaneSVG } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
-import { usdcFuji, usdcAbi } from "../utils/constants"
+import { usdcFuji, usdcAbi, ccipGuardianFuji, ccipGuardianAbi, ccipGuardianMumbai } from "../utils/constants"
 import { readContract, writeContract } from "wagmi/actions"
-import { useAccount } from "wagmi"
+import { useAccount, useChainId } from "wagmi"
 import { dbUser } from "../utils/polybase"
 import lighthouse from '@lighthouse-web3/sdk';
 import { signMessage } from "@wagmi/core";
-import { hashMessage } from "viem";
+import { hashMessage, parseUnits } from "viem";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 
 function FhePay({ ens }) {
+    const chainId = useChainId()
     const addRecentTransaction = useAddRecentTransaction();
     const { address } = useAccount()
     const [state, setState] = useState('dialog')
@@ -22,6 +23,7 @@ function FhePay({ ens }) {
     const [balance, setBalance] = useState(0)
     const [decryptedBalance, setDecryptedBalance] = useState('')
     const [sendAmount, setSendAmount] = useState('')
+    const [txChain, setTxChain] = useState('')
 
     useEffect(() => {
         async function getBalance() {
@@ -184,8 +186,8 @@ function FhePay({ ens }) {
     }
 
     const sendTx = async (receiver, result) => {
-        if(result?.sender_cipher_balance === undefined || result?.receiver_cipher_balance === undefined)
-        return
+        if (result?.sender_cipher_balance === undefined || result?.receiver_cipher_balance === undefined)
+            return
         const bytes32 = hashMessage('dev mode')
         // Receipt from Risc0 zkVM
         const guestReceipt = {
@@ -194,6 +196,11 @@ function FhePay({ ens }) {
             imageId: bytes32,
             postStateDigest: bytes32,
             journalHash: bytes32,
+        }
+        if (txChain !== '' && txChain != chainId) {
+            console.log('crosschain', txChain)
+            sendCrossChainTx(receiver, result, guestReceipt)
+            return
         }
         try {
             const tx = await writeContract({
@@ -211,6 +218,49 @@ function FhePay({ ens }) {
         catch (err) {
             console.log(err)
         }
+    }
+
+    const sendCrossChainTx = async (receiver, result, guestReceipt) => {
+        let contractAddress = ''
+        let receiverContractAddress = ''
+        let chainSelector = ''
+        if (chainId == '43113') {
+            contractAddress = ccipGuardianFuji
+            receiverContractAddress = ccipGuardianMumbai
+            chainSelector = '12532609583862916517'
+        }
+        else if (chainId == '80001') {
+            contractAddress = ccipGuardianMumbai
+            receiverContractAddress = ccipGuardianFuji
+            chainSelector = '14767482510784806043'
+        }
+        console.log(parseUnits(chainSelector, 0))
+        try {
+            const tx = await writeContract({
+                address: contractAddress,
+                abi: ccipGuardianAbi,
+                functionName: "fhePayCrosschain",
+                args: [parseUnits(chainSelector, 0), receiverContractAddress, receiver, result.sender_cipher_balance, result.receiver_cipher_balance, guestReceipt],
+            })
+            addRecentTransaction({
+                hash: tx?.hash,
+                description: 'FHE Pay crosschain'
+            })
+            setSendAmount('')
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    const mint = async ()=>{
+        const cipher = await encrypt(address, 50)
+        await writeContract({
+            address: usdcFuji,
+            abi: usdcAbi,
+            functionName: "mint",
+            args: [address, cipher],
+        })
     }
 
     return (
@@ -258,9 +308,10 @@ function FhePay({ ens }) {
                         label="Chain"
                         description="Select destination chain"
                         options={[
-                            { value: '1', label: 'Avalanche Fuji', prefix: <FujiSVG /> },
-                            { value: '2', label: 'Polygon Mumbai', prefix: <MumbaiSVG /> }
+                            { value: '43113', label: 'Avalanche Fuji', prefix: <FujiSVG /> },
+                            { value: '80001', label: 'Polygon Mumbai', prefix: <MumbaiSVG /> }
                         ]}
+                        onChange={(e) => setTxChain(e.target.value)}
                         placeholder="..."
                     />
                 </div>
