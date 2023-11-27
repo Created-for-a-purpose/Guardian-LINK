@@ -1,6 +1,5 @@
 export const usdcFuji = "0x25ABE8832911c81a4415087d6d27ebd5B7975921"
-export const usdcMumbai = ""
-
+export const usdcMumbai = "0x6cD0613315B2602F33001c1CD18dE8313c565E8e"
 export const usdcAbi = [
     {
         "inputs": [],
@@ -615,6 +614,193 @@ export const usdcAbi = [
             }
         ],
         "stateMutability": "view",
+        "type": "function"
+    }
+]
+
+export const ccipGuardianFuji = "0xC584207ECfb0D9441E8d66a328fAc2D7E364E081"
+export const ccipGuardianMumbai = "0xa56668ce197d2d489AB14E5Bb2Ca99c5C323fE5e"
+export const ccipGuardianAbi = [
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_router",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_mockUsdc",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "router",
+                "type": "address"
+            }
+        ],
+        "name": "InvalidRouter",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "messageId",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "uint64",
+                        "name": "sourceChainSelector",
+                        "type": "uint64"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "sender",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct Client.EVMTokenAmount[]",
+                        "name": "destTokenAmounts",
+                        "type": "tuple[]"
+                    }
+                ],
+                "internalType": "struct Client.Any2EVMMessage",
+                "name": "message",
+                "type": "tuple"
+            }
+        ],
+        "name": "ccipReceive",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint64",
+                "name": "_destinationChainSelector",
+                "type": "uint64"
+            },
+            {
+                "internalType": "address",
+                "name": "_receiverContract",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "receipient",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "cipher_sender",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "cipher_recipient",
+                "type": "uint256[]"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "bool",
+                        "name": "RISC0_DEV_MODE",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "seal",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "imageId",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "postStateDigest",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "journalHash",
+                        "type": "bytes32"
+                    }
+                ],
+                "internalType": "struct guestReceipt",
+                "name": "receipt",
+                "type": "tuple"
+            }
+        ],
+        "name": "fhePayCrosschain",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "messageId",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getRouter",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes4",
+                "name": "interfaceId",
+                "type": "bytes4"
+            }
+        ],
+        "name": "supportsInterface",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "pure",
         "type": "function"
     }
 ]

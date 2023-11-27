@@ -54,12 +54,12 @@ contract USDCmock is IERC20, RiscZeroGroth16Verifier, Ownable {
     ) external returns (bool) {
         require(
             receipt.RISC0_DEV_MODE ||
-            verify(
-                receipt.seal,
-                receipt.imageId,
-                receipt.postStateDigest,
-                receipt.journalHash
-            ),
+                verify(
+                    receipt.seal,
+                    receipt.imageId,
+                    receipt.postStateDigest,
+                    receipt.journalHash
+                ),
             "Invalid receipt!"
         );
         uint256 uintRep_sender = getUintRep(cipher_sender);
@@ -79,13 +79,13 @@ contract USDCmock is IERC20, RiscZeroGroth16Verifier, Ownable {
         return fheBalances[account].uintRep;
     }
 
-    function transfer(address recipient, uint256 amount)
-        external
-        returns (bool)
-    {
+    function transfer(
+        address recipient,
+        uint256 amount
+    ) external returns (bool) {
         return true;
     }
-    
+
     function transferFrom(
         address sender,
         address recipient,
