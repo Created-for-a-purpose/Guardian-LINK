@@ -9,6 +9,7 @@ import { useAccount } from "wagmi"
 import { dbUser } from "../utils/polybase"
 import lighthouse from '@lighthouse-web3/sdk';
 import { signMessage } from "@wagmi/core";
+import { hashMessage } from "viem";
 
 function FhePay({ ens }) {
     const { address } = useAccount()
@@ -18,6 +19,7 @@ function FhePay({ ens }) {
     const [isEncrypted, setIsEncrypted] = useState(true)
     const [balance, setBalance] = useState(0)
     const [decryptedBalance, setDecryptedBalance] = useState('')
+    const [sendAmount, setSendAmount] = useState('')
 
     useEffect(() => {
         async function getBalance() {
@@ -67,19 +69,50 @@ function FhePay({ ens }) {
         });
     }
 
-    const decrypt = async () => {
-        if (balance === 0) return
-        const userData = await dbUser.record(address).get()
-        const skeyPayload = JSON.parse(userData?.data?.skey)
-        const skey_cid = skeyPayload?.data?.Hash
-        const skey = await getSecretKey(skey_cid)
+    const encrypt = async (address, plaintext) => {
+        const url = 'http://localhost:8000/encrypt';
+        const pkey = await dbUser.record(address).get().then(res => res?.data?.pkey)
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "key": JSON.parse(pkey)?.pk,
+                    "plaintext": plaintext
+                }),
+            });
+            const ciphertext = await response.json();
+            return ciphertext
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    const getCipherBalance = async (address) => {
         const ciphertext = await readContract({
             address: usdcFuji,
             abi: usdcAbi,
             functionName: "getFheBalance",
             args: [address]
         })
+        if (ciphertext?.uintRep?.toString() === "0") {
+            const bal = await encrypt(address, 0)
+            return bal
+        }
         const cipher = new Uint8Array(ciphertext.cipher.map(Number))
+        return Array.from(cipher)
+    }
+
+    const decrypt = async () => {
+        if (balance === 0) return
+        const userData = await dbUser.record(address).get()
+        const skeyPayload = JSON.parse(userData?.data?.skey)
+        const skey_cid = skeyPayload?.data?.Hash
+        const skey = await getSecretKey(skey_cid)
+        const cipher = await getCipherBalance(address)
 
         const url = 'http://localhost:8000/decrypt';
         try {
@@ -90,7 +123,7 @@ function FhePay({ ens }) {
                 },
                 body: JSON.stringify({
                     "key": skey,
-                    "ciphertext": Array.from(cipher)
+                    "ciphertext": cipher
                 }),
             });
             const decryptedBalance = await response.json();
@@ -117,7 +150,60 @@ function FhePay({ ens }) {
         setIsEncrypted(!isEncrypted)
     }
 
-    const sendTx = async () => {
+    const createTx = async () => {
+        const url = 'http://localhost:8000/fhe_pay';
+        const sampleReceiver = "0xA2e91Dde322d9213E6f8E0d36c8869D73ce27c94"
+        const spk = await dbUser.record(address).get().then(res => res?.data?.pkey)
+        const rpk = await dbUser.record(sampleReceiver).get().then(res => res?.data?.pkey)
+
+        const scipher = await getCipherBalance(address)
+        const rcipher = await getCipherBalance(sampleReceiver)
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "sender_pk": JSON.parse(spk)?.pk,
+                    "sender_cipher_balance": Array.from(scipher),
+                    "receiver_pk": JSON.parse(rpk)?.pk,
+                    "receiver_cipher_balance": Array.from(rcipher),
+                    "plaintext_amount": parseInt(sendAmount)
+                }),
+            });
+            const fhePayResult = await response.json();
+            sendTx(sampleReceiver, fhePayResult)
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    const sendTx = async (receiver, result) => {
+        if(result?.sender_cipher_balance === undefined || result?.receiver_cipher_balance === undefined)
+        return
+        const bytes32 = hashMessage('dev mode')
+        const guestReceipt = {
+            RISC0_DEV_MODE: true,
+            seal: bytes32,
+            imageId: bytes32,
+            postStateDigest: bytes32,
+            journalHash: bytes32,
+        }
+        try {
+            const tx = await writeContract({
+                address: usdcFuji,
+                abi: usdcAbi,
+                functionName: "transfer",
+                args: [receiver, result.sender_cipher_balance, result.receiver_cipher_balance, guestReceipt],
+            })
+            console.log(tx.hash)
+        }
+        catch (err) {
+            console.log(err)
+        }
     }
 
     return (
@@ -140,7 +226,7 @@ function FhePay({ ens }) {
                 <Banner alert="warning" iconType={"none"}>
                     <div className="balance_container">
                         <div className="balance">
-                            Your balance: {isEncrypted||decryptedBalance===''?balance:decryptedBalance} USDC
+                            Your balance: {isEncrypted || decryptedBalance === '' ? balance : decryptedBalance} USDC
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             {isEncrypted ? (<EyeSVG className="decrypt" shouldShowTooltipIndicator
@@ -176,8 +262,10 @@ function FhePay({ ens }) {
                     description="Enter the amount to send"
                     placeholder="..."
                     prefix={<WalletSVG />}
+                    value={sendAmount}
+                    onChange={e => setSendAmount(e.target.value)}
                 />
-                <Button width="32" colorStyle="blueGradient" prefix={<AeroplaneSVG />} onClick={sendTx}>Send</Button>
+                <Button width="32" colorStyle="blueGradient" prefix={<AeroplaneSVG />} onClick={createTx}>Send</Button>
             </Dialog>
         </>
     )
