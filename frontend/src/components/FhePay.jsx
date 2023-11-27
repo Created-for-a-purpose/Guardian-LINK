@@ -10,8 +10,10 @@ import { dbUser } from "../utils/polybase"
 import lighthouse from '@lighthouse-web3/sdk';
 import { signMessage } from "@wagmi/core";
 import { hashMessage } from "viem";
+import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 
 function FhePay({ ens }) {
+    const addRecentTransaction = useAddRecentTransaction();
     const { address } = useAccount()
     const [state, setState] = useState('dialog')
     const getState = _state => state === _state;
@@ -185,6 +187,7 @@ function FhePay({ ens }) {
         if(result?.sender_cipher_balance === undefined || result?.receiver_cipher_balance === undefined)
         return
         const bytes32 = hashMessage('dev mode')
+        // Receipt from Risc0 zkVM
         const guestReceipt = {
             RISC0_DEV_MODE: true,
             seal: bytes32,
@@ -199,7 +202,11 @@ function FhePay({ ens }) {
                 functionName: "transfer",
                 args: [receiver, result.sender_cipher_balance, result.receiver_cipher_balance, guestReceipt],
             })
-            console.log(tx.hash)
+            addRecentTransaction({
+                hash: tx?.hash,
+                description: 'FHE Pay'
+            })
+            setSendAmount('')
         }
         catch (err) {
             console.log(err)
