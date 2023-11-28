@@ -6,11 +6,9 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 
 interface IMockUsdc {
-    function transferCrosschain(
-        bool receipient,
-        address entity,
+    function _updateSenderCrosschain(
+        address sender,
         uint256[] calldata cipher_sender,
-        uint256[] calldata cipher_recipient,
         guestReceipt calldata receipt
     ) external returns (bool);
 }
@@ -25,6 +23,8 @@ struct guestReceipt {
 
 contract CCIPguardian is CCIPReceiver {
     IMockUsdc private immutable mockUsdc;
+    mapping(address => string) public ccfheBalances;
+
     constructor(
         address _router,
         address _mockUsdc
@@ -37,36 +37,20 @@ contract CCIPguardian is CCIPReceiver {
     function fhePayCrosschain(
         uint64 _destinationChainSelector,
         address _receiverContract,
-        address receipient,
+        address receiver,
         uint256[] calldata cipher_sender,
-        uint256[] calldata cipher_recipient,
+        string calldata cipher_recipient,
         guestReceipt calldata receipt
     ) external returns (bytes32 messageId) {
-        uint256[] memory empty = new uint256[](0); // For un-necessary payload
-        mockUsdc.transferCrosschain(
-            false,
-            msg.sender,
-            cipher_sender,
-            empty,
-            receipt
-        );
+        mockUsdc._updateSenderCrosschain(msg.sender, cipher_sender, receipt);
+
         Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiverContract), // ABI-encoded receiver address
-            data: abi.encode(
-                true,
-                receipient,
-                empty,
-                cipher_recipient,
-                receipt.RISC0_DEV_MODE,
-                receipt.seal,
-                receipt.imageId,
-                receipt.postStateDigest,
-                receipt.journalHash
-            ), // ABI-encoded function call
+            data: abi.encode(receiver, cipher_recipient), // ABI-encoded function call
             tokenAmounts: new Client.EVMTokenAmount[](0), // Empty array aas no tokens are transferred
             extraArgs: Client._argsToBytes(
                 // Additional arguments, setting gas limit and non-strict sequencing mode
-                Client.EVMExtraArgsV1({gasLimit: 1000_000, strict: false})
+                Client.EVMExtraArgsV1({gasLimit: 4_000_000, strict: false})
             ),
             feeToken: address(0)
         });
@@ -93,33 +77,10 @@ contract CCIPguardian is CCIPReceiver {
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
-        (
-            bool receipient,
-            address entity,
-            uint256[] memory cipher_sender,
-            uint256[] memory cipher_recipient,
-            bool RISC0_DEV_MODE,
-            bytes memory seal,
-            bytes32 imageId,
-            bytes32 postStateDigest,
-            bytes32 journalHash
-        ) = abi.decode(
-                any2EvmMessage.data,
-                (bool, address, uint256[], uint256[], bool, bytes, bytes32, bytes32, bytes32)
-            );
-        guestReceipt memory receipt = guestReceipt({
-            RISC0_DEV_MODE: RISC0_DEV_MODE,
-            seal: seal,
-            imageId: imageId,
-            postStateDigest: postStateDigest,
-            journalHash: journalHash
-        });
-        mockUsdc.transferCrosschain(
-            receipient,
-            entity,
-            cipher_sender,
-            cipher_recipient,
-            receipt
+        (address receiver, string memory cipher_recipient) = abi.decode(
+            any2EvmMessage.data,
+            (address, string)
         );
+        ccfheBalances[receiver] = cipher_recipient;
     }
 }

@@ -9,7 +9,7 @@ module.exports = {
       accounts: [process.env.PRIVATE_KEY],
     },
     mumbai: {
-      url: "https://indulgent-shy-aura.matic-testnet.discover.quiknode.pro/f3eadc815d04049d61d581cc6e1f6a6f152c7eec",
+      url: "https://polygon-mumbai-bor.publicnode.com",
       accounts: [process.env.PRIVATE_KEY],
     }
   },

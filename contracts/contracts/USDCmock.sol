@@ -71,10 +71,34 @@ contract USDCmock is IERC20, RiscZeroGroth16Verifier, Ownable {
         return true;
     }
 
-    function transferCrosschain(
-        bool receipient,
-        address entity,
+    function _updateSenderCrosschain(
+        address sender,
         uint256[] calldata cipher_sender,
+        guestReceipt calldata receipt
+    ) external returns (bool) {
+        require(
+            receipt.RISC0_DEV_MODE ||
+                verify(
+                    receipt.seal,
+                    receipt.imageId,
+                    receipt.postStateDigest,
+                    receipt.journalHash
+                ),
+            "Invalid receipt!"
+        );
+
+        bytes32 bytesRep = keccak256(abi.encode(cipher_sender));
+        uint256 uintRep = uint256(bytesRep) & ((1 << 256) - 1);
+        fheBalance memory _fheBalance = fheBalance({
+            cipher: cipher_sender,
+            uintRep: uintRep
+        });
+        fheBalances[sender] = _fheBalance;
+        return true;
+    }
+
+    function _updateReceiverCrosschain(
+        address receiver,
         uint256[] calldata cipher_recipient,
         guestReceipt calldata receipt
     ) external returns (bool) {
@@ -88,16 +112,8 @@ contract USDCmock is IERC20, RiscZeroGroth16Verifier, Ownable {
                 ),
             "Invalid receipt!"
         );
-        if (receipient) {
-            uint256 uintRep_recipient = getUintRep(cipher_recipient);
-            fheBalances[entity].cipher = cipher_recipient;
-            fheBalances[entity].uintRep = uintRep_recipient;
-            return true;
-        }
-        uint256 uintRep_sender = getUintRep(cipher_sender);
-        fheBalances[entity].cipher = cipher_sender;
-        fheBalances[entity].uintRep = uintRep_sender;
-
+    
+        fheBalances[receiver].cipher = cipher_recipient;
         return true;
     }
 

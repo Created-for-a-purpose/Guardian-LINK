@@ -1,5 +1,4 @@
-export const usdcFuji = "0x7cD40F7b76CE58DC28324270c35A54c9d9A1C4f2"
-export const usdcMumbai = "0xC2d6130c156fC425bb6310a24827772F6035d759"
+export const usdcFuji = "0xd46162E341fa294733367CEfF91A45DBE94315b9"
 export const usdcAbi = [
     {
         "inputs": [],
@@ -121,6 +120,118 @@ export const usdcAbi = [
             }
         ],
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "receiver",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "cipher_recipient",
+                "type": "uint256[]"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "bool",
+                        "name": "RISC0_DEV_MODE",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "seal",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "imageId",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "postStateDigest",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "journalHash",
+                        "type": "bytes32"
+                    }
+                ],
+                "internalType": "struct USDCmock.guestReceipt",
+                "name": "receipt",
+                "type": "tuple"
+            }
+        ],
+        "name": "_updateReceiverCrosschain",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "cipher_sender",
+                "type": "uint256[]"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "bool",
+                        "name": "RISC0_DEV_MODE",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "seal",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "imageId",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "postStateDigest",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "journalHash",
+                        "type": "bytes32"
+                    }
+                ],
+                "internalType": "struct USDCmock.guestReceipt",
+                "name": "receipt",
+                "type": "tuple"
+            }
+        ],
+        "name": "_updateSenderCrosschain",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -405,72 +516,6 @@ export const usdcAbi = [
     {
         "inputs": [
             {
-                "internalType": "bool",
-                "name": "receipient",
-                "type": "bool"
-            },
-            {
-                "internalType": "address",
-                "name": "entity",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "cipher_sender",
-                "type": "uint256[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "cipher_recipient",
-                "type": "uint256[]"
-            },
-            {
-                "components": [
-                    {
-                        "internalType": "bool",
-                        "name": "RISC0_DEV_MODE",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "seal",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "imageId",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "postStateDigest",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "journalHash",
-                        "type": "bytes32"
-                    }
-                ],
-                "internalType": "struct USDCmock.guestReceipt",
-                "name": "receipt",
-                "type": "tuple"
-            }
-        ],
-        "name": "transferCrosschain",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "address",
                 "name": "sender",
                 "type": "address"
@@ -684,8 +729,8 @@ export const usdcAbi = [
     }
 ]
 
-export const ccipGuardianFuji = "0x61a10eCE9c85c9bbC56C5f0a145E5a8d5f87e6d4"
-export const ccipGuardianMumbai = "0x2eDE51011AdAf29e7312dE02Db1cAaDFeAa97D27"
+export const ccipGuardianFuji = "0xB6844f180C10D04fC137862Df895D25C8f71AA1e"
+export const ccipGuardianMumbai = "0x91A8D582073A5e3d0f2c47Aa8ADA7A3567C4F80B"
 export const ccipGuardianAbi = [
     {
         "inputs": [
@@ -713,6 +758,25 @@ export const ccipGuardianAbi = [
         ],
         "name": "InvalidRouter",
         "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "ccfheBalances",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
     },
     {
         "inputs": [
@@ -780,7 +844,7 @@ export const ccipGuardianAbi = [
             },
             {
                 "internalType": "address",
-                "name": "receipient",
+                "name": "receiver",
                 "type": "address"
             },
             {
@@ -789,9 +853,9 @@ export const ccipGuardianAbi = [
                 "type": "uint256[]"
             },
             {
-                "internalType": "uint256[]",
+                "internalType": "string",
                 "name": "cipher_recipient",
-                "type": "uint256[]"
+                "type": "string"
             },
             {
                 "components": [
@@ -845,19 +909,6 @@ export const ccipGuardianAbi = [
                 "internalType": "address",
                 "name": "",
                 "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "name",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
             }
         ],
         "stateMutability": "view",

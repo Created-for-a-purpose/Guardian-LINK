@@ -28,6 +28,10 @@ function FhePay({ ens }) {
     useEffect(() => {
         async function getBalance() {
             try {
+                if (chainId == '80001') {
+                    ccbalance()
+                    return
+                }
                 const balance = await readContract({
                     address: usdcFuji,
                     abi: usdcAbi,
@@ -44,6 +48,22 @@ function FhePay({ ens }) {
         }
         getBalance()
     }, [state, address])
+
+    const ccbalance = async () => {
+        const cid = await readContract({
+            address: ccipGuardianMumbai,
+            abi: ccipGuardianAbi,
+            functionName: "ccfheBalances",
+            args: [address]
+        })
+        console.log('ccid', cid)
+        if (cid == "") return 0
+        const response = await fetch(`https://gateway.lighthouse.storage/ipfs/${cid}`)
+        const cipher = await response.json()
+        console.log('cipher', cipher)
+        setBalance(cipher.slice(0, 10))
+        return cipher
+    }
 
     const encryptionSignature = async () => {
         const messageRequested = (await lighthouse.getAuthMessage(address)).data.message;
@@ -96,6 +116,7 @@ function FhePay({ ens }) {
     }
 
     const getCipherBalance = async (address) => {
+        if (chainId == '80001') return ccbalance()
         const ciphertext = await readContract({
             address: usdcFuji,
             abi: usdcAbi,
@@ -141,6 +162,11 @@ function FhePay({ ens }) {
     }
 
     const conceal = async () => {
+        if (chainId == '80001') {
+            ccbalance()
+            setIsEncrypted(!isEncrypted)
+            return
+        }
         if (balance === 0) return
         const bal = await readContract({
             address: usdcFuji,
@@ -234,13 +260,21 @@ function FhePay({ ens }) {
             receiverContractAddress = ccipGuardianFuji
             chainSelector = '14767482510784806043'
         }
-        console.log(parseUnits(chainSelector, 0))
         try {
+            const api = '8b8298ac.940174d0ee014e158ff730056ce793cc'
+            const response = await lighthouse.uploadText(JSON.stringify(result.receiver_cipher_balance), api, address)
+            if (response?.data?.Hash === undefined) return
+            const receiverCipherBalance = response?.data?.Hash
+            console.log(parseUnits(chainSelector, 0))
             const tx = await writeContract({
                 address: contractAddress,
                 abi: ccipGuardianAbi,
                 functionName: "fhePayCrosschain",
-                args: [parseUnits(chainSelector, 0), receiverContractAddress, receiver, result.sender_cipher_balance, result.receiver_cipher_balance, guestReceipt],
+                args: [parseUnits(chainSelector, 0), receiverContractAddress, receiver,
+                result.sender_cipher_balance,
+                    receiverCipherBalance,
+                    guestReceipt
+                ],
             })
             addRecentTransaction({
                 hash: tx?.hash,
@@ -253,7 +287,7 @@ function FhePay({ ens }) {
         }
     }
 
-    const mint = async ()=>{
+    const mint = async () => {
         const cipher = await encrypt(address, 50)
         await writeContract({
             address: usdcFuji,
