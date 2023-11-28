@@ -1,7 +1,8 @@
 import Navbar from "../components/Navbar";
 import FhePay from "../components/FhePay";
-import { Card, Typography, Avatar, Button, AeroplaneSVG, EnvelopeSVG } from "@ensdomains/thorin";
+import { Card, Typography, Avatar, Button,Toast,AeroplaneSVG, EnvelopeSVG } from "@ensdomains/thorin";
 import { CopySVG, HeartActiveSVG, LinkSVG } from "@ensdomains/thorin";
+import { useState } from "react";
 import "./Profile.css"
 
 function Profile() {

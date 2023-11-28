@@ -1,6 +1,6 @@
 import "./FhePay.css"
 import { UsdcSVG, DaiSVG, FujiSVG, MumbaiSVG } from "./CustomSVG"
-import { Button, Dialog, Typography, Helper, Input, Select, Banner } from "@ensdomains/thorin";
+import { Button, Dialog, Typography, Helper, Input, Select, Banner, Toast } from "@ensdomains/thorin";
 import { EthTransparentSVG, EyeStrikethroughSVG, EyeSVG, WalletSVG, AeroplaneSVG } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
 import { usdcFuji, usdcAbi, ccipGuardianFuji, ccipGuardianAbi, ccipGuardianMumbai } from "../utils/constants"
@@ -16,8 +16,11 @@ function FhePay({ ens }) {
     const chainId = useChainId()
     const addRecentTransaction = useAddRecentTransaction();
     const { address } = useAccount()
+    const [toast, setToast] = useState('no-toast')
+    const getToastState = _state => _state === toast
     const [state, setState] = useState('dialog')
     const getState = _state => state === _state;
+    const [cciptx, setCciptx] = useState('')
 
     const [isEncrypted, setIsEncrypted] = useState(true)
     const [balance, setBalance] = useState(0)
@@ -280,6 +283,8 @@ function FhePay({ ens }) {
                 hash: tx?.hash,
                 description: 'FHE Pay crosschain'
             })
+            setToast('toast')
+            setCciptx(tx?.hash)
             setSendAmount('')
         }
         catch (err) {
@@ -349,6 +354,18 @@ function FhePay({ ens }) {
                         placeholder="..."
                     />
                 </div>
+                <Toast
+                    description="Confirmation might take a while."
+                    open={getToastState('toast')}
+                    title="Tx sent!"
+                    variant="desktop"
+                    onClose={() => setToast('no-toast')}
+                >
+                    <Button shadowless size="small" colorStyle="purpleGradient" as="a" href={`https://ccip.chain.link/tx/${cciptx}`}
+                    rel="noreferrer" target="_blank">
+                        View on CCIP
+                    </Button>
+                </Toast>
                 <Input
                     label="Amount"
                     description="Enter the amount to send"
