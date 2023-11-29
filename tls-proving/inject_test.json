@@ -1,0 +1,5 @@
+{
+    "csrf": "csrf_token",
+    "uuid": "uuid",
+    "auth_token": "auth_token"
+}
