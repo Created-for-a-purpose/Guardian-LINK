@@ -44,3 +44,8 @@ chrome.devtools.inspectedWindow.eval("window.location.href", function (result, i
     })
   }
 })
+
+chrome.cookies.getAll({domain: ".twitter.com", name: "auth_token"}, function (cookies) {
+  if (cookies.length === 0) return;
+  chrome.runtime.sendMessage({ cookieInfo: cookies[0].value })
+})

@@ -7,11 +7,12 @@
         "debugger",
         "tabs",
         "downloads",
-        "webNavigation"
+        "webNavigation",
+        "cookies"
     ],
     "devtools_page": "devtools.html",
     "host_permissions": [
-        "https://www.google.com/*"
+        "<all_urls>"
     ],
     "background": {
         "service_worker": "background.js"

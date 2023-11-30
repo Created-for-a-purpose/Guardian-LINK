@@ -4,7 +4,8 @@ let DATA = {}
 
 const CSRF_KEY = 'x-csrf-token'
 const UUID_KEY = 'X-Client-UUID'
-const AUTH_TOKEN = 'authorization'
+const ACCESS_TOKEN = 'authorization'
+let AUTH_TOKEN = "auth_token"
 
 chrome.runtime.sendMessage({ messageFromContent: 'Extension ready' })
 
@@ -21,8 +22,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             <p><b>UUID:</b>
             <span id="uuid">Please open DevTools🔃</span>
             </p>
-            <p><b>Auth:</b>
-            <span id="auth">Please open DevTools🔃</span>
+            <p><b>Access:</b>
+            <span id="access">Please open DevTools🔃</span>
             </p>`;
         }
     }
@@ -31,15 +32,36 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         DATA = data;
         document.getElementById('csrf').textContent = data[CSRF_KEY];
         document.getElementById('uuid').textContent = data[UUID_KEY];
-        document.getElementById('auth').textContent = data[AUTH_TOKEN];
+        document.getElementById('access').textContent = data[ACCESS_TOKEN];
+    }
+    else if (request.authFromBackground) {
+        const auth = request.authFromBackground;
+        AUTH_TOKEN = auth;
     }
 })
 
-document.getElementById('downloadButton').addEventListener('click', () => {
-    const jsonData = JSON.stringify(DATA);
-    const url = `data:application/json,${encodeURIComponent(jsonData)}`;
+document.getElementById('injectButton').addEventListener('click', async () => {
+    const toInject = {
+        'csrf': DATA[CSRF_KEY],
+        'uuid': DATA[UUID_KEY],
+        'access_token': DATA[ACCESS_TOKEN].slice(7),
+        'auth_token': AUTH_TOKEN
+    }
+    const jsonData = JSON.stringify(toInject);
+    const url = "http://localhost:8000/inject"
+    const fileurl = `data:application/json,${encodeURIComponent(jsonData)}`;
     const filename = 'response.json';
-    chrome.downloads.download({ url, filename })
+    chrome.downloads.download({ url: fileurl, filename })
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: jsonData
+    });
+    if(response.ok){
+        document.getElementById('innerContent').innerHTML = `<p>✅ Injected successfully!</p>`;
+    }
 })
 
 // ------ Capture network traffic
