@@ -19,8 +19,19 @@
 }
 
 .dashboard_content_header {
-    margin: 1rem;
     display: flex;
+}
+
+.dashboard_content_body{
+    height: 60%;
+    padding: 1rem;
+}
+
+.content_card{
+    margin-left: 1rem;
+    margin-top: 1.5rem;
+    width: 44%;
+    gap: 2rem;
 }
 
 .about_heading {

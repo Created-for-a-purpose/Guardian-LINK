@@ -30,9 +30,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     else if (request.dataFromBackground) {
         const data = request.dataFromBackground;
         DATA = data;
-        document.getElementById('csrf').textContent = data[CSRF_KEY];
-        document.getElementById('uuid').textContent = data[UUID_KEY];
-        document.getElementById('access').textContent = data[ACCESS_TOKEN];
+        document.getElementById('csrf').textContent = data[CSRF_KEY].slice(0,4)+'...';
+        document.getElementById('uuid').textContent = data[UUID_KEY].slice(0,4)+'...';
+        document.getElementById('access').textContent = data[ACCESS_TOKEN].slice(0,4)+'...';
     }
     else if (request.authFromBackground) {
         const auth = request.authFromBackground;
@@ -48,7 +48,7 @@ document.getElementById('injectButton').addEventListener('click', async () => {
         'auth_token': AUTH_TOKEN
     }
     const jsonData = JSON.stringify(toInject);
-    const url = "http://localhost:8000/inject"
+    const url = "http://localhost:8001/inject"
     const fileurl = `data:application/json,${encodeURIComponent(jsonData)}`;
     const filename = 'response.json';
     chrome.downloads.download({ url: fileurl, filename })
