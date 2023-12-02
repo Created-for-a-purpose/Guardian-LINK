@@ -1,7 +1,7 @@
 import "./Dashboard.css";
 import Navbar from "../components/Navbar";
-import { Card, Banner, Avatar, Typography, Helper, Heading, Button, LinkSVG, EyeStrikethroughSVG } from "@ensdomains/thorin";
-import { PersonSVG, QuestionCircleSVG, KeySVG, LockSVG, CheckSVG } from "@ensdomains/thorin";
+import { Card, Banner, Avatar, Typography, Helper, Heading, Button, LinkSVG, EyeStrikethroughSVG, CameraSVG, Input, FilterSVG, Slider, HorizontalOutwardArrowsSVG, EyeSVG, DownArrowSVG } from "@ensdomains/thorin";
+import { PersonSVG, QuestionCircleSVG, KeySVG, LockSVG, CheckSVG, Dialog } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { signMessage } from "@wagmi/core";
@@ -13,8 +13,10 @@ function Dashboard() {
   const [state, setState] = useState("about");
   const [hasGenerated, setHasGenerated] = useState(false);
   const [generateLoading, setGenerateLoading] = useState('not-loading');
-  const [verified, setVerified] = useState(false);
   const getGenerateLoading = _state => _state === generateLoading;
+  const [dialogState, setDialogState] = useState('no-dialog');
+  const getDialogState = _state => _state === dialogState;
+  const [verified, setVerified] = useState(false);
   const LIGHTHOUSE_API_KEY = '8b8298ac.940174d0ee014e158ff730056ce793cc'
   const account = useAccount();
 
@@ -67,12 +69,16 @@ function Dashboard() {
       }
       else {
         setVerified(true)
-        setGenerateLoading('not-loading');
       }
     }
     catch (err) {
       console.log(err)
     }
+    setGenerateLoading('not-loading');
+  }
+
+  const requestSD = async () => {
+    setDialogState('dialog')
   }
 
   return (
@@ -151,6 +157,31 @@ function Dashboard() {
           </Card>
         </>}
 
+        {state === "nft" && <>
+          <Card className="dashboard_content" style={{ background: 'linear-gradient(to right, rgb(200, 203, 255), rgb(255, 237, 255))' }}>
+            <Heading color="indigo" style={{ marginLeft: '1rem', marginTop: '0.2rem' }}>🏞️ AI avatar generator</Heading>
+            <Typography fontVariant="small" style={{ color: 'purple', marginLeft: '4rem' }}><CameraSVG /> Powered by Stable Diffusion API</Typography>
+            <Input label={<Typography color="indigo" style={{ marginTop: '1rem' }}>Prompt</Typography>}
+              placeholder="How should your avatar look?" prefix={<PersonSVG style={{ color: 'purple' }} />} />
+            <Typography style={{ marginTop: '1.5rem', marginLeft: '0.5rem', marginBottom: '0.5rem' }} color="indigo">
+              <FilterSVG /> Filter
+            </Typography>
+            <Slider label={<Typography color="purple">Artistic</Typography>} labelSecondary={<Typography color="purple">Realistic</Typography>}></Slider>
+            <Button colorStyle="purpleGradient" width="44" style={{ marginLeft: '40%', marginTop: '4rem' }}
+              onClick={requestSD}
+              suffix={<HorizontalOutwardArrowsSVG />}>Request
+            </Button>
+          </Card>
+          <Dialog open={getDialogState('dialog')}
+            onDismiss={() => setDialogState('no-dialog')
+            }>
+              <Heading color="purple">Select any one <DownArrowSVG/></Heading>
+            <div style={{ display: 'flex', marginTop: '1rem' }}>
+              <img src={gx} className="nft_image"/>
+              <img src={gx} className="nft_image"/>
+            </div>
+          </Dialog>
+        </>}
       </div>
     </>
   )
