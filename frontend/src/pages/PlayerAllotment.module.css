@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+
+.player_allotment_container {
+    background: url('../images/game.jpg') no-repeat center center fixed;
+    background-size: cover;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player_allotment_container > h1 {
+    position: absolute;
+    top: 1rem;
+    left: 45%;
+    color: white;
+    font-size: 3rem;
+    font-family: 'VT323', monospace;
+}
+
+.player_allotment_container__content {
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player_allotment_container__content__player {
+    width: 30%;
+}
+.player_allotment_container__content__body {
+    height: 100%;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.player_allotment_container__content__body__description {
+    border-radius: 1rem;
+    width: 100%;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    padding: 1rem;
+    background: url('https://img.freepik.com/free-photo/vintage-grunge-paper-background_1048-10911.jpg?w=2000') no-repeat center center fixed;
+}
+
+.player_allotment_container__content__body__weapon_container {
+    border-radius: 1rem;
+    width: 100%;
+    height: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-family: 'VT323', monospace;
+}
+
+.player_allotment_container__content__body__weapon_description {
+    border-radius: 0.5rem;
+    width: calc(100% - 100px);
+    height: calc(100% - 3rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1rem;
+    background: url('https://img.freepik.com/free-photo/vintage-grunge-paper-background_1048-10911.jpg?w=2000') no-repeat center center fixed;
+}
+
+.player_allotment_container__content__body__weapon_description p {
+    font-size: 1.5rem;
+    font-family: 'VT323', monospace;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    width: 100%;
+}
+
+.player_allotment_container__content__body__button_container {
+    border-radius: 1rem;
+    width: 100%;
+    height: calc(40% - 3rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'VT323', monospace;
+    gap: 1rem;
+}
+
+
+.stats {
+    border-radius: 1rem;
+    width: calc(80% - 1rem);
+    height: 100%;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-evenly;
+    background: url('https://img.freepik.com/free-photo/vintage-grunge-paper-background_1048-10911.jpg?w=2000') no-repeat center center fixed;
+}
+.stats p {
+    width: 20%;
+    aspect-ratio: 1;
+    border: 1px solid black;
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 100%;
+}
+.stats p:nth-of-type(1){
+    background: url('https://c4.wallpaperflare.com/wallpaper/589/956/851/background-pink-pixels-square-hd-wallpaper-preview.jpg');
+    background-size: contain;
+    background-position: center center;
+}
+
+.stats p:nth-of-type(2){
+    background: url('https://t3.ftcdn.net/jpg/04/72/29/24/360_F_472292498_V3X5rtgLdWyrhDFPQS7bJVNum2aBerHZ.jpg');
+    background-size: contain;
+    background-position: center center;
+}
+
+.stats p:nth-of-type(3){
+    background: url('https://w0.peakpx.com/wallpaper/888/965/HD-wallpaper-blue-pixels-background-ultra-aero-colorful-blue-background-pixels-mosaic.jpg');
+    background-size: contain;
+    background-position: center center;
+}
+
+.button_container {
+    height: 100%;
+    width: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button_container button {
+    width: 100%;
+    height: 50%;
+    border-radius: 1rem;
+    color: white;
+    border: 1px solid white;
+    font-size: 2rem;
+    font-family: 'VT323', monospace;
+    background: url('data:image/jpeg;base64,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');
+}

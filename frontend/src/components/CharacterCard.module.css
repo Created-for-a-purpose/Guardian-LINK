@@ -1,0 +1,66 @@
+/* CharacterCard.module.css */
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+
+.character_card_container {
+    width: 350px;
+    aspect-ratio: 2/3;
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+    border: 2px solid #35424a; /* Add border */
+    box-sizing: border-box; /* Include border in width and height calculation */
+    background: url('https://img.freepik.com/free-photo/vintage-grunge-paper-background_1048-10911.jpg?w=2000') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.character_card_container__content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.character_card_container__content__container {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.character_card_container__content__name_container {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.character_card_container__content__image {
+    width: 90%;
+    object-fit: cover;
+}
+
+.character_card_container__content__name {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 2rem;
+    font-family: 'VT323', monospace;
+
+}
+
+.character_card_container:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.character_card_container:active {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
