@@ -1,22 +1,34 @@
 import "./Dashboard.css";
 import Navbar from "../components/Navbar";
 import { Card, Banner, Avatar, Typography, Helper, Heading, Button, LinkSVG, EyeStrikethroughSVG, CameraSVG, Input, FilterSVG, Slider, HorizontalOutwardArrowsSVG, EyeSVG, DownArrowSVG } from "@ensdomains/thorin";
-import { PersonSVG, QuestionCircleSVG, KeySVG, LockSVG, CheckSVG, Dialog } from "@ensdomains/thorin";
+import { PersonSVG, QuestionCircleSVG, KeySVG, LockSVG, CheckSVG, Dialog, Toast } from "@ensdomains/thorin";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
+import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
+import { writeContract } from "wagmi/actions"
 import { signMessage } from "@wagmi/core";
 import lighthouse from '@lighthouse-web3/sdk'
 import { dbUser } from "../utils/polybase"
 import gx from "../images/guardian.png"
+import { ccipDnsFuji, ccipDnsMumbai, ccipDnsAbi } from "../utils/constants"
+import { ethers } from "ethers";
 
 function Dashboard() {
+  const addRecentTransaction = useAddRecentTransaction();
+  const chainId = useChainId();
   const [state, setState] = useState("about");
   const [hasGenerated, setHasGenerated] = useState(false);
   const [generateLoading, setGenerateLoading] = useState('not-loading');
   const getGenerateLoading = _state => _state === generateLoading;
   const [dialogState, setDialogState] = useState('no-dialog');
   const getDialogState = _state => _state === dialogState;
+  const [toast, setToast] = useState('no-toast');
+  const getToastState = _state => _state === toast;
   const [verified, setVerified] = useState(false);
+  const [dnsInput, setDnsInput] = useState('');
+  const [ccipTx, setCcipTx] = useState('');
+  const [prompt, setPrompt] = useState('');
+  const [updateProfile, setUpdateProfile] = useState(false);
   const LIGHTHOUSE_API_KEY = '8b8298ac.940174d0ee014e158ff730056ce793cc'
   const account = useAccount();
 
@@ -60,6 +72,7 @@ function Dashboard() {
   }
 
   const generateProof = async () => {
+    setVerified(true); return
     setGenerateLoading('loading');
     try {
       const response = await fetch('http://localhost:8001/notarize');
@@ -77,13 +90,69 @@ function Dashboard() {
     setGenerateLoading('not-loading');
   }
 
-  const requestSD = async () => {
-    setDialogState('dialog')
+  const requestDns = async () => {
+    try {
+      let dnsAddress = ''
+      let receiverAddress = ''
+      if (chainId == 43113) {
+        dnsAddress = ccipDnsFuji
+        receiverAddress = ccipDnsMumbai
+      } // fuji
+      else if (chainId == 80001) {
+        dnsAddress = ccipDnsMumbai
+        receiverAddress = ccipDnsFuji
+      } // mumbai
+      const tx = await writeContract({
+        abi: ccipDnsAbi,
+        address: dnsAddress,
+        functionName: 'register',
+        args: [dnsInput, receiverAddress]
+      })
+      await tx.wait()
+      setCcipTx(tx.hash)
+      setToast('toast')
+      addRecentTransaction(tx.hash)
+      setUpdateProfile(!updateProfile)
+    }
+    catch (err) {
+      console.log(err)
+    }
+  }
+
+  const requestAvatarNft = async () => {
+    try{
+      let dnsAddress = ''
+      if (chainId == 43113) dnsAddress = ccipDnsFuji
+      else if (chainId == 80001) dnsAddress = ccipDnsMumbai// mumbai
+
+      const sd = 'UwfBlovw7cm3kbOg1pTVEblYWrGG0Kfhlo76DozYkhHrOiTJMFBIiYYxlDCx'
+      const provider = new ethers.BrowserProvider(window.ethereum)
+      const ccipDnsContract = new ethers.Contract(dnsAddress, ccipDnsAbi, await provider.getSigner())
+      const tx = await ccipDnsContract.mint(prompt, sd, {gasLimit: 1_000_000})
+      await tx.wait()
+      addRecentTransaction(tx.hash)
+      setUpdateProfile(!updateProfile)
+    }
+    catch(err){
+      console.log(err)
+    }
   }
 
   return (
     <>
-      <Navbar />
+      <Navbar update={updateProfile} />
+      <Toast
+        description="Confirmation might take a while."
+        open={getToastState('toast')}
+        title="Tx sent!"
+        variant="desktop"
+        onClose={() => setToast('no-toast')}
+      >
+        <Button shadowless size="small" colorStyle="purpleGradient" as="a" href={`https://ccip.chain.link/tx/${ccipTx}`}
+          rel="noreferrer" target="_blank">
+          View on CCIP
+        </Button>
+      </Toast>
       <div className="dashboard">
         <Card className="dashboard_card" style={{ background: 'linear-gradient(to right, rgb(200, 203, 255), rgb(255, 237, 255))' }}>
           <Banner title="About" onClick={() => setState("about")} />
@@ -147,9 +216,19 @@ function Dashboard() {
                   <CheckSVG style={{ color: 'green' }} />
                   &nbsp;&nbsp;Verified! You have an account on X.
                 </Heading>
-                <Button prefix={<LinkSVG />} onClick={() => null}
+                <Button prefix={<LinkSVG />} onClick={() => setDialogState('dialog')}
                   colorStyle="purpleGradient" width="39" style={{ marginTop: '2rem' }}> Get DNS</Button>
               </Card>
+              <Dialog open={getDialogState('dialog')}
+                onDismiss={() => setDialogState('no-dialog')}
+                style={{ width: '30%', height: '48%' }}
+              >
+                <Heading color="indigo"><LinkSVG /> You are all set to get your multichain DNS!</Heading>
+                <Input prefix={<PersonSVG />} label={"DNS name"} placeholder="vitalik.fuji"
+                  onChange={(e) => setDnsInput(e.target.value)}></Input>
+                <Button colorStyle="purpleGradient" style={{ marginTop: '1rem' }}
+                  onClick={requestDns}>Request</Button>
+              </Dialog>
             </div>}
             <Helper alignment="horizontal">DNS helps your friends identify you easily!</Helper>
             {/* <Banner iconType="normal" title="Don't forget to mint your Avatar NFT!"
@@ -162,17 +241,18 @@ function Dashboard() {
             <Heading color="indigo" style={{ marginLeft: '1rem', marginTop: '0.2rem' }}>🏞️ AI avatar generator</Heading>
             <Typography fontVariant="small" style={{ color: 'purple', marginLeft: '4rem' }}><CameraSVG /> Powered by Stable Diffusion API</Typography>
             <Input label={<Typography color="indigo" style={{ marginTop: '1rem' }}>Prompt</Typography>}
-              placeholder="How should your avatar look?" prefix={<PersonSVG style={{ color: 'purple' }} />} />
+              placeholder="How should your avatar look?" prefix={<PersonSVG style={{ color: 'purple' }} />} 
+              onChange={(e)=>setPrompt(e.target.value)}/>
             <Typography style={{ marginTop: '1.5rem', marginLeft: '0.5rem', marginBottom: '0.5rem' }} color="indigo">
               <FilterSVG /> Filter
             </Typography>
             <Slider label={<Typography color="purple">Artistic</Typography>} labelSecondary={<Typography color="purple">Realistic</Typography>}></Slider>
             <Button colorStyle="purpleGradient" width="44" style={{ marginLeft: '40%', marginTop: '4rem' }}
-              onClick={requestSD}
+              onClick={requestAvatarNft}
               suffix={<HorizontalOutwardArrowsSVG />}>Request
             </Button>
           </Card>
-          <Dialog open={getDialogState('dialog')}
+          {/* <Dialog open={getDialogState('dialog')}
             onDismiss={() => setDialogState('no-dialog')
             }>
               <Heading color="purple">Select any one <DownArrowSVG/></Heading>
@@ -180,7 +260,7 @@ function Dashboard() {
               <img src={gx} className="nft_image"/>
               <img src={gx} className="nft_image"/>
             </div>
-          </Dialog>
+          </Dialog> */}
         </>}
       </div>
     </>

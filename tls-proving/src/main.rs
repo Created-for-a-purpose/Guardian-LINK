@@ -2,11 +2,12 @@ use eyre::Result;
 use hyper::{body::to_bytes, client::conn::Parts, Body, Request, StatusCode};
 use rustls::{Certificate, ClientConfig, RootCertStore};
 use serde::{Deserialize, Serialize};
-use std::{env, fs::File as StdFile, io::BufReader, ops::Range, sync::Arc};
+use std::{env, fs::File as StdFile, io::BufReader, ops::Range, sync::Arc, time::Duration};
 use tokio::{fs::File, io::AsyncWriteExt as _, net::TcpStream};
 use tokio_rustls::TlsConnector;
 use tokio_util::compat::{FuturesAsyncReadCompatExt, TokioAsyncReadCompatExt};
 use tlsn_prover::tls::{Prover, ProverConfig};
+use tlsn_core::proof::SessionProof;
 use crate::rocket::futures::AsyncWriteExt;
 
 #[macro_use] extern crate rocket;
@@ -186,6 +187,7 @@ async fn notarize() -> Vec<u8>{
         &[
             access_token.as_bytes(),
             csrf_token.as_bytes(),
+            auth_token.as_bytes(),
         ],
     );
 
@@ -193,22 +195,58 @@ async fn notarize() -> Vec<u8>{
 
     let builder = prover.commitment_builder();
 
+    let mut commitment_ids = Vec::new();
     // Commit to the outbound transcript, isolating the data that contain secrets
     for range in public_ranges.iter().chain(private_ranges.iter()) {
-        builder.commit_sent(range.clone()).unwrap();
+        commitment_ids.push(builder.commit_sent(range.clone()).unwrap());
     }
 
     // Commit to the full received transcript in one shot, as we don't need to redact anything
-    builder.commit_recv(0..recv_len).unwrap();
+    commitment_ids.push(builder.commit_recv(0..recv_len).unwrap());
 
     // Finalize, returning the notarized session
     let notarized_session = prover.finalize().await.unwrap();
 
     println!("Notarization complete!");
 
-    // Return the notarized session 
-    serde_json::to_vec(&notarized_session)
-    .unwrap()
+    let session_proof = notarized_session.session_proof();
+    let mut proof_builder = notarized_session.data().build_substrings_proof();
+
+    // Reveal select commitments to the proof
+    proof_builder.reveal(commitment_ids[0]).unwrap();
+    proof_builder.reveal(commitment_ids[1]).unwrap();
+    proof_builder.reveal(commitment_ids[2]).unwrap();
+
+    let substrings_proof = proof_builder.build().unwrap();
+
+    let SessionProof{
+        header,
+        server_name,
+        ..
+    } = session_proof;
+
+    let time = Duration::from_secs(header.time());
+    let (mut sent, mut recv) = substrings_proof.verify(&header).unwrap();
+    sent.set_redacted(b'X');
+    recv.set_redacted(b'X');
+
+    println!("-------------------------------------------------------------------");
+    println!(
+        "Successfully verified that the bytes below came from a session with {:?} at {:?}.",
+        server_name, time
+    );
+    println!("Note that the bytes which the Prover chose not to disclose are shown as X.");
+    println!();
+    println!("Bytes sent:");
+    println!();
+    print!("{}", String::from_utf8(sent.data().to_vec()).unwrap());
+    println!();
+    println!("Bytes received:");
+    println!();
+    println!("{}", String::from_utf8(recv.data().to_vec()).unwrap());
+    println!("-------------------------------------------------------------------");
+
+    vec![1]
 }
 
 async fn setup_notary_connection() -> (tokio_rustls::client::TlsStream<TcpStream>, String) {

@@ -8,6 +8,7 @@ import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
 
 contract ccipDNS is CCIPReceiver, FunctionsClient {
+    using FunctionsRequest for FunctionsRequest.Request;
     uint256 tokens = 0;
     mapping(uint256 => address) public tokenToAddress;
     mapping(uint256 => string) public tokenToMetadata;
@@ -22,24 +23,22 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
     address receiverContract;
     uint64 destinationChainSelector;
     uint64 subscriptionId;
-    bytes32 donId;
+    bytes32 donId = 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000;
     mapping(bytes32 => address) public SDreqs;
 
     constructor(
         address _router,
         address _functionsRouter,
-        bytes32 _donId,
         uint64 _sid,
         uint64 _destinationChainSelector
     ) CCIPReceiver(_router) FunctionsClient(_functionsRouter) {
-        donId = _donId;
         subscriptionId = _sid;
         destinationChainSelector = _destinationChainSelector;
     }
 
     receive() external payable {}
 
-    function _mint(string calldata imageUrl, address minter) internal {
+    function _mint(string memory imageUrl, address minter) internal {
         uint256 _tokenId = tokens;
         tokenToAddress[_tokenId] = minter;
         tokenToMetadata[_tokenId] = imageUrl;
@@ -47,7 +46,8 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
         tokens++;
     }
 
-    string source = "const prompt = args[0];"
+    string source = 
+                    "const prompt = args[0];"
                     "const apiKey = args[1];"
                     "var myHeaders = new Headers();"
                     "myHeaders.append('Content-Type', 'application/json');"
@@ -74,13 +74,14 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
                     "method: 'POST',"
                     "url: `https://stablediffusionapi.com/api/v3/text2img`,"
                     "headers: myHeaders,"
-                    "data: raw"
+                    "data: raw,"
+                    "timeout: '8000 ms'"
                     "});"
                     "if (apiResponse.error) {"
                     "throw Error('Request failed');"
                     "}"
                     "const { data } = apiResponse;"
-                    "return Functions.encodeString((data.output)[0]);";
+                    "return Functions.encodeString((data.output)[0])";
 
     function mint(string memory prompt, string memory key) external {
         FunctionsRequest.Request memory req;
@@ -89,10 +90,11 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
         args[0] = prompt;
         args[1] = key;
         req.setArgs(args);
-        uint32 gasLimit = 1_000_000;
+        uint32 gasLimit = 300000;
+        uint64 sid = 1619;
         bytes32 rid = _sendRequest(
             req.encodeCBOR(),
-            subscriptionId,
+            sid,
             gasLimit,
             donId
         );
@@ -108,29 +110,6 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
         require(requestor != address(0), "request not recognized");
         string memory imageUrl = string(response);
         _mint(imageUrl, requestor);
-        
-        Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
-            receiver: abi.encode(receiverContract), // ABI-encoded receiver address
-            data: abi.encode(1, imageUrl, requestor), // ABI-encoded function call
-            tokenAmounts: new Client.EVMTokenAmount[](0), // Empty array aas no tokens are transferred
-            extraArgs: Client._argsToBytes(
-                // Additional arguments, setting gas limit and non-strict sequencing mode
-                Client.EVMExtraArgsV1({gasLimit: 1_000_000, strict: false})
-            ),
-            feeToken: address(0)
-        });
-
-        IRouterClient router = IRouterClient(this.getRouter());
-        uint256 fees = router.getFee(destinationChainSelector, evm2AnyMessage);
-
-        if (fees > address(this).balance)
-            revert("Not enough balance to pay for fees");
-
-        // Send the CCIP message through the router
-        router.ccipSend{value: fees}(
-            destinationChainSelector,
-            evm2AnyMessage
-        );
     }
 
     function _register(address sender, string memory name) internal {
@@ -142,7 +121,7 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
 
     function register(
         string memory name,
-        address receiver,
+        address receiver
     ) external returns (bytes32 messageId) {
         _register(msg.sender, name);
         receiverContract = receiver;
