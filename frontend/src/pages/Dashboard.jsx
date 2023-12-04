@@ -5,13 +5,14 @@ import { PersonSVG, QuestionCircleSVG, KeySVG, LockSVG, CheckSVG, Dialog, Toast 
 import { useEffect, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
-import { writeContract } from "wagmi/actions"
+import { writeContract, waitForTransaction } from "wagmi/actions"
 import { signMessage } from "@wagmi/core";
 import lighthouse from '@lighthouse-web3/sdk'
 import { dbUser } from "../utils/polybase"
 import gx from "../images/guardian.png"
 import { ccipDnsFuji, ccipDnsMumbai, ccipDnsAbi } from "../utils/constants"
 import { ethers } from "ethers";
+import { parseUnits } from "viem";
 
 function Dashboard() {
   const addRecentTransaction = useAddRecentTransaction();
@@ -72,7 +73,6 @@ function Dashboard() {
   }
 
   const generateProof = async () => {
-    setVerified(true); return
     setGenerateLoading('loading');
     try {
       const response = await fetch('http://localhost:8001/notarize');
@@ -94,24 +94,28 @@ function Dashboard() {
     try {
       let dnsAddress = ''
       let receiverAddress = ''
-      if (chainId == 43113) {
+      let chainSelector = ''
+      if (chainId === 43113) {
         dnsAddress = ccipDnsFuji
         receiverAddress = ccipDnsMumbai
+        chainSelector = '12532609583862916517'
       } // fuji
-      else if (chainId == 80001) {
+      else if (chainId === 80001) {
         dnsAddress = ccipDnsMumbai
         receiverAddress = ccipDnsFuji
+        chainSelector = '14767482510784806043'
       } // mumbai
+      
       const tx = await writeContract({
         abi: ccipDnsAbi,
         address: dnsAddress,
         functionName: 'register',
-        args: [dnsInput, receiverAddress]
+        args: [dnsInput, receiverAddress, parseUnits(chainSelector, 0)]
       })
-      await tx.wait()
+      console.log(tx.hash)
       setCcipTx(tx.hash)
       setToast('toast')
-      addRecentTransaction(tx.hash)
+      waitForTransaction({hash: tx.hash})
       setUpdateProfile(!updateProfile)
     }
     catch (err) {

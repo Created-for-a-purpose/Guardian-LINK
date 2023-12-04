@@ -20,8 +20,6 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
     mapping(address => did) public resolver;
     mapping(string => address) public nameToAddress;
 
-    address receiverContract;
-    uint64 destinationChainSelector;
     uint64 subscriptionId;
     bytes32 donId = 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000;
     mapping(bytes32 => address) public SDreqs;
@@ -29,11 +27,9 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
     constructor(
         address _router,
         address _functionsRouter,
-        uint64 _sid,
-        uint64 _destinationChainSelector
+        uint64 _sid
     ) CCIPReceiver(_router) FunctionsClient(_functionsRouter) {
         subscriptionId = _sid;
-        destinationChainSelector = _destinationChainSelector;
     }
 
     receive() external payable {}
@@ -121,14 +117,14 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
 
     function register(
         string memory name,
-        address receiver
+        address receiver,
+        uint64 destinationChainSelector
     ) external returns (bytes32 messageId) {
         _register(msg.sender, name);
-        receiverContract = receiver;
 
         Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver), // ABI-encoded receiver address
-            data: abi.encode(0, name, msg.sender), // ABI-encoded function call
+            data: abi.encode(name, msg.sender), // ABI-encoded function call
             tokenAmounts: new Client.EVMTokenAmount[](0), // Empty array aas no tokens are transferred
             extraArgs: Client._argsToBytes(
                 // Additional arguments, setting gas limit and non-strict sequencing mode
@@ -155,23 +151,10 @@ contract ccipDNS is CCIPReceiver, FunctionsClient {
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
-        (uint256 todo, , ) = abi.decode(
+        (string memory name, address sender) = abi.decode(
             any2EvmMessage.data,
-            (uint256, string, address)
-        );
-        if(todo == 0){
-        (, string memory name, address sender) = abi.decode(
-            any2EvmMessage.data,
-            (uint256, string, address)
+            (string, address)
         );
         _register(sender, name);
-        }
-        else{
-        (, string memory url, address sender) = abi.decode(
-            any2EvmMessage.data,
-            (uint256, string, address)
-        );
-        _mint(url, sender);
-        }
     }
 }

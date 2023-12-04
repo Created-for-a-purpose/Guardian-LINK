@@ -939,8 +939,8 @@ export const ccipGuardianAbi = [
     }
 ]
 
-export const ccipDnsFuji = "0xB614Ef6E8227BD756eF2d2A7f7F14832AD0f7D03"
-export const ccipDnsMumbai = "0x44918c1caEa1162d872308827baC3a0EA9c98f6E"
+export const ccipDnsFuji = "0x484BFDae61AA6DccC06ca751F98B68091D6708B2"
+export const ccipDnsMumbai = "0x8d836Ae63eDd69d49B421Cd9DCa64645A5a0Ef1d"
 export const ccipDnsAbi = [
     {
         "inputs": [
@@ -957,11 +957,6 @@ export const ccipDnsAbi = [
             {
                 "internalType": "uint64",
                 "name": "_sid",
-                "type": "uint64"
-            },
-            {
-                "internalType": "uint64",
-                "name": "_destinationChainSelector",
                 "type": "uint64"
             }
         ],
@@ -1180,6 +1175,11 @@ export const ccipDnsAbi = [
                 "internalType": "address",
                 "name": "receiver",
                 "type": "address"
+            },
+            {
+                "internalType": "uint64",
+                "name": "destinationChainSelector",
+                "type": "uint64"
             }
         ],
         "name": "register",
