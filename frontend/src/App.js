@@ -17,6 +17,7 @@ import { publicProvider } from 'wagmi/providers/public';
 import { polygonMumbai, avalancheFuji } from 'wagmi/chains';
 import Game from './pages/Game'
 import PlayerAllotment from './pages/PlayerAllotment'
+import GamePlay from './pages/GamePlay'
 const { chains, publicClient } = configureChains(
   [avalancheFuji, polygonMumbai],
   [publicProvider()]
@@ -53,6 +54,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route exact path="/game" element={<Game />} />
             <Route exact path="/game/play" element={<PlayerAllotment />} />
+            <Route exact path="/game/play-level" element={<GamePlay />} />
           </Routes>
         </ThemeProvider>
       </RainbowKitProvider>

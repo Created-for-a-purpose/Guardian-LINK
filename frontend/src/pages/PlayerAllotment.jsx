@@ -9,6 +9,11 @@ import WeaponCard from "../components/WeaponCard";
 export default function PlayerAllotment() {
     const [players, setPlayers] = useState(Math.floor(Math.random() * 100) % 8);
     const [weapons, setWeapons] = useState(Math.floor(Math.random() * 100) % 9);
+
+    const navigate = useNavigate();
+    function playGame() {
+        navigate("/game/play-level");
+    }
     return (
         <div className={styles.player_allotment_container}>
             <h1>Guardian Wars</h1>
@@ -44,7 +49,7 @@ export default function PlayerAllotment() {
                             </p>
                         </div>
                         <div className={styles.button_container}>
-                            <button className={styles.button_container__button}>Start</button>
+                            <button className={styles.button_container__button} onClick={playGame}>Start</button>
                         </div>
                     </div>
                 </div>
