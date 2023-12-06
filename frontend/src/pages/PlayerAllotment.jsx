@@ -46,7 +46,7 @@ export default function PlayerAllotment() {
         detectEvent()
         const int = setInterval(() => {
             detectEvent()
-        }, 8000)
+        }, 4000)
         return () => {
             clearInterval(int)
         }

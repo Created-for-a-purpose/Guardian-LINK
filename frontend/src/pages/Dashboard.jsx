@@ -13,8 +13,10 @@ import gx from "../images/guardian.png"
 import { ccipDnsFuji, ccipDnsMumbai, ccipDnsAbi } from "../utils/constants"
 import { ethers } from "ethers";
 import { parseUnits } from "viem";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+  const navigate = useNavigate()
   const addRecentTransaction = useAddRecentTransaction();
   const chainId = useChainId();
   const [state, setState] = useState("about");
@@ -105,7 +107,7 @@ function Dashboard() {
         receiverAddress = ccipDnsFuji
         chainSelector = '14767482510784806043'
       } // mumbai
-      
+
       const tx = await writeContract({
         abi: ccipDnsAbi,
         address: dnsAddress,
@@ -115,7 +117,7 @@ function Dashboard() {
       console.log(tx.hash)
       setCcipTx(tx.hash)
       setToast('toast')
-      waitForTransaction({hash: tx.hash})
+      waitForTransaction({ hash: tx.hash })
       setUpdateProfile(!updateProfile)
     }
     catch (err) {
@@ -124,7 +126,7 @@ function Dashboard() {
   }
 
   const requestAvatarNft = async () => {
-    try{
+    try {
       let dnsAddress = ''
       if (chainId == 43113) dnsAddress = ccipDnsFuji
       else if (chainId == 80001) dnsAddress = ccipDnsMumbai// mumbai
@@ -132,12 +134,12 @@ function Dashboard() {
       const sd = 'UwfBlovw7cm3kbOg1pTVEblYWrGG0Kfhlo76DozYkhHrOiTJMFBIiYYxlDCx'
       const provider = new ethers.BrowserProvider(window.ethereum)
       const ccipDnsContract = new ethers.Contract(dnsAddress, ccipDnsAbi, await provider.getSigner())
-      const tx = await ccipDnsContract.mint(prompt, sd, {gasLimit: 1_000_000})
+      const tx = await ccipDnsContract.mint(prompt, sd, { gasLimit: 1_000_000 })
       await tx.wait()
       addRecentTransaction(tx.hash)
       setUpdateProfile(!updateProfile)
     }
-    catch(err){
+    catch (err) {
       console.log(err)
     }
   }
@@ -162,7 +164,7 @@ function Dashboard() {
           <Banner title="About" onClick={() => setState("about")} />
           <Banner title="Get DNS" onClick={() => setState("dns")} />
           <Banner title="Avatar NFT" onClick={() => setState("nft")} />
-          <Banner title="Swap" onClick={() => setState("swap")} />
+          <Banner title="Wars" onClick={() => setState("wars")} />
         </Card>
 
         {state === "about" && <>
@@ -183,11 +185,6 @@ function Dashboard() {
         {state === "dns" && <>
           <Card className="dashboard_content" style={{ background: 'linear-gradient(to right, rgb(200, 203, 255), rgb(255, 237, 255))' }}>
             <div className="dashboard_content_header">
-              {/* <div style={{ width: '100px' }}> */}
-              {/* <Avatar label="Noun 97" src={'invalid'} /> */}
-              {/* </div> */}
-              {/* <Typography fontVariant="extraLarge" style={{ marginTop: '2rem', margin: '2rem' }}>
-                <PersonSVG /> &nbsp;Your DNS: &nbsp;<QuestionCircleSVG /></Typography> */}
               <Banner icon={<LinkSVG style={{ color: 'purple' }} />}
                 title="Obtain an exclusive multichain DNS now!" style={{ backgroundColor: 'rgb(230, 242, 254)' }}>
                 <Typography>
@@ -235,8 +232,6 @@ function Dashboard() {
               </Dialog>
             </div>}
             <Helper alignment="horizontal">DNS helps your friends identify you easily!</Helper>
-            {/* <Banner iconType="normal" title="Don't forget to mint your Avatar NFT!"
-              style={{ width: '38%', height: '15%', marginLeft: '30%', marginTop: '2rem', textAlign: 'center' }} /> */}
           </Card>
         </>}
 
@@ -245,8 +240,8 @@ function Dashboard() {
             <Heading color="indigo" style={{ marginLeft: '1rem', marginTop: '0.2rem' }}>🏞️ AI avatar generator</Heading>
             <Typography fontVariant="small" style={{ color: 'purple', marginLeft: '4rem' }}><CameraSVG /> Powered by Stable Diffusion API</Typography>
             <Input label={<Typography color="indigo" style={{ marginTop: '1rem' }}>Prompt</Typography>}
-              placeholder="How should your avatar look?" prefix={<PersonSVG style={{ color: 'purple' }} />} 
-              onChange={(e)=>setPrompt(e.target.value)}/>
+              placeholder="How should your avatar look?" prefix={<PersonSVG style={{ color: 'purple' }} />}
+              onChange={(e) => setPrompt(e.target.value)} />
             <Typography style={{ marginTop: '1.5rem', marginLeft: '0.5rem', marginBottom: '0.5rem' }} color="indigo">
               <FilterSVG /> Filter
             </Typography>
@@ -256,16 +251,29 @@ function Dashboard() {
               suffix={<HorizontalOutwardArrowsSVG />}>Request
             </Button>
           </Card>
-          {/* <Dialog open={getDialogState('dialog')}
-            onDismiss={() => setDialogState('no-dialog')
-            }>
-              <Heading color="purple">Select any one <DownArrowSVG/></Heading>
-            <div style={{ display: 'flex', marginTop: '1rem' }}>
-              <img src={gx} className="nft_image"/>
-              <img src={gx} className="nft_image"/>
-            </div>
-          </Dialog> */}
         </>}
+
+        {
+          state === 'wars' && <>
+            <Card className="dashboard_content" style={{ background: 'linear-gradient(to right, rgb(200, 203, 255), rgb(255, 237, 255))' }}>
+              <Heading color="indigo" style={{ marginLeft: '2rem', marginTop: '0.2rem', marginBottom: '1rem' }}>Guardian Wars</Heading>
+              <Typography fontVariant="small" style={{ color: 'purple', marginLeft: '3rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <img src="https://assets-global.website-files.com/5f6b7190899f41fb70882d08/648c864820db5ec8146baf21_icon-product_vrf.svg" style={{ height: '40px', weight: '40px' }} /> Secured with Chainlink VRF
+                </div>
+              </Typography>
+              <Typography fontVariant="small" style={{ color: 'purple', marginLeft: '3rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <img src="https://assets-global.website-files.com/5f6b7190899f41fb70882d08/648c8633d4251bd0197d24e5_icon-product_automation.svg" style={{ height: '40px', weight: '40px' }} /> Powered by Chainlink Automation
+                </div>
+              </Typography>
+              <Typography fontVariant="largeBold" style={{ color: 'purple', marginLeft: '32%', marginTop: '3rem' }}><LinkSVG /> Link with folks and engage in friendly wars!</Typography>
+              <Button colorStyle="purpleGradient" width="48" style={{ marginLeft: '40%', marginTop: '3rem' }}
+                onClick={() => navigate('/game')}>Start Guardian Wars
+              </Button>
+            </Card>
+          </>
+        }
       </div>
     </>
   )

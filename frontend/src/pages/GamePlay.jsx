@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./GamePlay.module.css"
 import CharacterCard from '../components/CharacterCard';
 import WeaponCard from "../components/WeaponCard";
@@ -11,50 +11,85 @@ export default function GamePlay() {
     const attackCooldown = [5, 3, 2, 1]
     const attacks = ['Ember', 'Blaze', 'Slash', 'Hit']
     const [attackCooldownManager, setAttackCooldownManager] = useState(attacks)
-    const [ choices, setChoices ] = useState([])
+    const [choices, setChoices] = useState([])
+    const [health, setHealth] = useState('10')
+    const [armor, setArmor] = useState('10')
+    const [attack, setAttack] = useState('⚔️')
+    const [durationEnded, setDurationEnded] = useState(false)
+    const activeTimeoutsRef = useRef([]);
     const provider = new ethers.BrowserProvider(window.ethereum)
     let randomness = '945678654567898767'
+    let [playerData, setPlayerData] = useState([{character: 0, weapon: 2}, {character: 1, weapon: 1}])
 
     useEffect(() => {
-        const retrieveRandomness = async () => {
-            // const contract = new ethers.Contract(guardianWars, guardianWarsAbi, await provider.getSigner())
-            // randomness = await contract.getRandomness();
+        const retrieveData = async () => {
+            const contract = new ethers.Contract(guardianWars, guardianWarsAbi, await provider.getSigner())
+            randomness = (await contract.getRandomness()).toString();
+            const data = await contract.getCharacters();
+            setPlayerData([{character: data[0][0], weapon: data[0][1]}, {character: data[1][0], weapon: data[1][1]}])
         }
-        retrieveRandomness()
+        retrieveData()
     }, [])
+
+    useEffect(() => {
+        return () => {
+            activeTimeoutsRef.current.forEach((id) => clearTimeout(id));
+        };
+    }, []);
 
     const toggle = (e) => {
         if (attackCooldownManager[e.target.value] === 'Recharging...') return false
-        let array = [...attackCooldownManager]
-        array[e.target.value] = 'Recharging...'
-        setAttackCooldownManager(array)
-        setTimeout(() => {
-            array = [...attackCooldownManager]
-            array[e.target.value] = attacks[e.target.value]
-            setAttackCooldownManager(array)
+        console.log('Toggle - Start:', e.target.value);
+
+        setAttackCooldownManager((prevCooldownManager) => {
+            const newArray = [...prevCooldownManager];
+            newArray[e.target.value] = 'Recharging...';
+            return newArray;
+        });
+        const timeoutId = setTimeout(() => {
+            console.log('Timeout - start:', e.target.value);
+            setAttackCooldownManager((prevCooldownManager) => {
+                const newArray = [...prevCooldownManager];
+                newArray[e.target.value] = attacks[e.target.value];
+                return newArray;
+            });
+            activeTimeoutsRef.current = activeTimeoutsRef.current.filter((id) => id !== timeoutId);
+            console.log('Timeout - End:', e.target.value);
         }, [attackCooldown[e.target.value] * 1000])
+        activeTimeoutsRef.current.push(timeoutId);
+        console.log('Toggle - Start:', e.target.value);
         return true
     }
 
-    const mapper = (weight) =>{
-       weight = parseInt(weight)
-       if(weight==9) return {hit: 'Ruthless!!', damage: `+${weight} damage`}
-       else if(weight<=8 && weight>=7) return {hit: 'Devastating!', damage: `+${weight} damage`}
-       else if(weight<=6 && weight>=5) return {hit: 'Deadly!', damage: `+${weight} damage`}
-       else if(weight<=4 && weight>=2) return {hit: 'Weak', damage: `+${weight} damage`}
-       return {hit: 'Ineffective', damage: `+${weight} damage`}
+    const mapper = (weight) => {
+        weight = parseInt(weight)
+        setHealth((health-weight/20).toFixed(2))
+        if (weight == 9)
+        {
+            setHealth((health-weight/20).toFixed(2))
+            setArmor((armor-weight/100).toFixed(2))
+            setAttack(attack==='⚔️'?'🤺':'⚔️')
+            return { hit: 'Ruthless!!', damage: `+${weight} damage` }
+        }
+        else if (weight <= 8 && weight >= 7) {
+            setArmor((armor-weight/20).toFixed(2))
+            return { hit: 'Devastating!', damage: `+${weight} damage` }
+        }
+        else if (weight <= 6 && weight >= 5) return { hit: 'Deadly!', damage: `+${weight} damage` }
+        else if (weight <= 4 && weight >= 2) return { hit: 'Weak', damage: `+${weight} damage` }
+        return { hit: 'Ineffective', damage: `+${weight} damage` }
     }
 
     const attacked = (e) => {
-        if(!toggle(e)) return
-        return
+        if (!toggle(e)) return
         setChoices([...choices, attackCooldown[e.target.value]])
-        const mod = 10**(choices.length+1)
-        const weight = ((attackCooldown[e.target.value]*(randomness%mod))%mod)/(10**choices.length)
+
+        const mod = 10 ** (choices.length + 1)
+        const weight = ((attackCooldown[e.target.value] * (randomness % mod)) % mod) / (10 ** choices.length)
         const effect = mapper(weight);
         setHit(effect.hit)
         setDamage(effect.damage)
-        setTimeout(()=>{
+        setTimeout(() => {
             setHit('')
             setDamage('')
         }, [2000])
@@ -65,32 +100,26 @@ export default function GamePlay() {
         <div className={styles.container}>
             <div className={styles.player_container}>
                 <p className={styles.turn}>Attacking!</p>
-                <CharacterCard character={1}></CharacterCard>
-                <WeaponCard weapon={1}></WeaponCard>
+                <CharacterCard character={playerData ? playerData[0].character: 0}></CharacterCard>
+                <WeaponCard weapon={playerData ? playerData[0].weapon: 0}></WeaponCard>
             </div>
 
             <div className={styles.player_attacks}>
                 <div className={styles.health}>
                     <div className={styles.health_player1}>
                         <p>
-                            10 ❤️
-                        </p>
-                        <p>
-                            10 ⚔️
-                        </p>
-                        <p>
-                            10 🛡️
+                            {attack}
                         </p>
                     </div>
                     <div className={styles.health_player2}>
                         <p>
-                            10 ❤️
+                            {health} ❤️
                         </p>
                         <p>
                             10 ⚔️
                         </p>
                         <p>
-                            10 🛡️
+                            {armor} 🛡️
                         </p>
 
                     </div>
@@ -112,9 +141,16 @@ export default function GamePlay() {
             </div>
             <div className={styles.player_container}>
                 <p className={styles.turn}>Defending</p>
-                <CharacterCard character={1}></CharacterCard>
-                <WeaponCard weapon={1}></WeaponCard>
+                <CharacterCard character={playerData ? playerData[1].character: 0}></CharacterCard>
+                <WeaponCard weapon={playerData ? playerData[1].weapon: 0}></WeaponCard>
             </div>
+            <dialog open={durationEnded} className={styles.dialog_box}>
+                {/* <p className={styles.dialog}>Game ended!</p>
+                <button className={styles.dialog_btn}>Proceed</button> */}
+                {/* <p className={styles.dialog_win}>You won!</p>
+                <p className={styles.dialog_win} style={{color: 'red'}}>You lost!</p>
+                <p className={styles.dialog_result}>You dealt more damage to your opponent!</p> */}
+            </dialog>
         </div>
     )
 };

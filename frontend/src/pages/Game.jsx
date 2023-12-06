@@ -33,7 +33,7 @@ export default function Game() {
         detectEvent()
         const int = setInterval(() => {
             detectEvent()
-        }, 8000)
+        }, 4000)
         return () => {
             clearInterval(int)
         }

@@ -27,6 +27,7 @@ contract GuardianWars is AutomationCompatibleInterface, VRFConsumerBaseV2 {
     uint256 randomness2;
     uint256 randomness3;
     uint256 score1;
+    uint256 startTime = 0;
     uint8 public win = 0;
 
     uint64 subscriptionId;
@@ -47,6 +48,21 @@ contract GuardianWars is AutomationCompatibleInterface, VRFConsumerBaseV2 {
 
     function arePlayersInitialized() external view returns (bool) {
         return playersInitialized;
+    }
+
+    function isPlayer2() external view returns(bool){
+        return (players[1]==msg.sender);
+    }
+
+    function gameDurationEnded() external view returns(bool){
+        require(startTime!=0);
+        return (block.timestamp>startTime+60);
+    }
+
+    function getWinner() external view returns(address){
+        require(win>0);
+        if(win==1) return players[0];
+        return players[1];
     }
 
     function getCharacters()
@@ -148,6 +164,7 @@ contract GuardianWars is AutomationCompatibleInterface, VRFConsumerBaseV2 {
             randomness1 = _randomWords[0];
             randomness2 = _randomWords[1];
             randomness3 = _randomWords[2];
+            startTime = block.timestamp;
             emit RandomnessGenerated(true);
         }
     }
@@ -160,5 +177,6 @@ contract GuardianWars is AutomationCompatibleInterface, VRFConsumerBaseV2 {
         randomness2 = 0;
         randomness3 = 0;
         win = 0;
+        startTime = 0;
     }
 }
