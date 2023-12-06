@@ -8,6 +8,33 @@
     justify-content: center;
 }
 
+.game_container > h1{
+    position: absolute;
+    top: 1rem;
+    left: 40%;
+    background: linear-gradient(to right, rgb(81,69,195), rgb(239,157,233),rgb(239,157,233), rgb(239,157,233), rgb(81,69,195));
+    color: black;
+    font-size: 3rem;
+    font-family: 'VT323', monospace;
+    padding: 1rem;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    border-radius: 1rem;
+}
+
+.game_container > h2{
+    position: absolute;
+    background-color: whitesmoke;
+    bottom: 3rem;
+    font-family: 'VT323', monospace;
+    font-size: xx-large;
+    color: rgb(2, 2, 139);
+    padding: 1rem;
+    border-width: 0.2rem;
+    border-color: black;
+    border-radius: 1rem;
+}
+
 .game_container__buttons {
     height: 50%;
     width: 40%;
@@ -22,6 +49,8 @@
 
 
 .game_container__buttons button {
+    font-family: 'VT323', monospace;
+    font-size: x-large;
     width: 30%;
     height: 20%;
     border-radius: 1rem;

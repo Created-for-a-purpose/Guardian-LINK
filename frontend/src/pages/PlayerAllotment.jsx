@@ -1,19 +1,57 @@
 import React from "react";
 import styles from "./PlayerAllotment.module.css";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CharacterCard from "../components/CharacterCard";
 import WeaponCard from "../components/WeaponCard";
-
+import characters from "../utils/characters.json";
+import weapons from "../utils/weapons.json"
+import { guardianWars, guardianWarsAbi } from "../utils/constants";
+import { ethers } from "ethers"
 
 export default function PlayerAllotment() {
-    const [players, setPlayers] = useState(Math.floor(Math.random() * 100) % 8);
-    const [weapons, setWeapons] = useState(Math.floor(Math.random() * 100) % 9);
-
+    const [players, setPlayers] = useState(0);
+    const [weapon, setWeapon] = useState(0);
+    const [buttonText, setButtonText] = useState('Start')
     const navigate = useNavigate();
-    function playGame() {
-        navigate("/game/play-level");
-    }
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    let gWars;
+
+    useEffect(() => {
+        const setContract = async () => {
+            const contract = new ethers.Contract(guardianWars, guardianWarsAbi, await provider.getSigner())
+            gWars = contract
+            try {
+                const playerData = await contract.getCharacters()
+                setPlayers(playerData[0][0])
+                setWeapon(playerData[0][1])
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+        setContract()
+        const detectEvent = async () => {
+            if (!gWars) return
+            try {
+                const randomnessGenerated = await gWars.getRandomness()
+                if (randomnessGenerated?.toString() === '0') return
+                navigate("/game/play-level");
+            }
+            catch (err) {
+                console.log(err);
+                return;
+            }
+        }
+        detectEvent()
+        const int = setInterval(() => {
+            detectEvent()
+        }, 8000)
+        return () => {
+            clearInterval(int)
+        }
+    }, [])
+
     return (
         <div className={styles.player_allotment_container}>
             <h1>Guardian Wars</h1>
@@ -23,16 +61,16 @@ export default function PlayerAllotment() {
                 </div>
                 <div className={styles.player_allotment_container__content__body}>
                     <div className={styles.player_allotment_container__content__body__description}>
-                        Golem Snickermack: A grinning goblin turned undead, wielding scavenged contraptions. Choose for an eerie twist in your fantasy quest.
+                        {characters[players].name}: {characters[players].description}
                     </div>
                     <div className={styles.player_allotment_container__content__body__weapon_container}>
-                        <WeaponCard weapon={weapons}></WeaponCard>
+                        <WeaponCard weapon={weapon}></WeaponCard>
                         <div className={styles.player_allotment_container__content__body__weapon_description}>
                             <p>
-                                Golem Snickermack: A grinning goblin turned undead, wielding scavenged contraptions. Choose for an eerie twist in your fantasy quest.
+                                {weapons[weapon].name}: {weapons[weapon].description}
                             </p>
                             <p>
-                                Special Attack: Burn
+                                Special Attack: {weapons[weapon].attack}
                             </p>
                         </div>
                     </div>
@@ -49,7 +87,7 @@ export default function PlayerAllotment() {
                             </p>
                         </div>
                         <div className={styles.button_container}>
-                            <button className={styles.button_container__button} onClick={playGame}>Start</button>
+                            <button className={styles.button_container__button} onClick={() => setButtonText('Loading...')}>{buttonText}</button>
                         </div>
                     </div>
                 </div>

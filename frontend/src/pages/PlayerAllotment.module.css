@@ -14,8 +14,13 @@
 .player_allotment_container > h1 {
     position: absolute;
     top: 1rem;
-    left: 45%;
-    color: white;
+    left: 43%;
+    background: linear-gradient(to right, rgb(81,69,195), rgb(239,157,233),rgb(239,157,233), rgb(239,157,233), rgb(81,69,195));
+    color: black;
+    padding: 0.5rem;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    border-radius: 1rem;
     font-size: 3rem;
     font-family: 'VT323', monospace;
 }

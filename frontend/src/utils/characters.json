@@ -1,0 +1,34 @@
+{
+    "0": {
+        "name": "Blue Gandalf",
+        "description": " A mystical enchanter with a cloak of cerulean, wielding ancient spells. Select for a journey guided by wisdom and the essence of the ethereal blue."
+    },
+    "1": {
+        "name": "Drake",
+        "description": " A colossal dragon with obsidian scales, wreathed in shadows. Choose for a fiery companion in your epic fantasy odyssey."
+    },
+    "2": {
+        "name": "Revenant",
+        "description": "A haunting figure with a skull head, draped in ethereal shadows. Pick for a chilling presence in your dark and mysterious adventure."
+    },
+    "3": {
+        "name": "Golem Snickermack",
+        "description": "A grinning goblin turned undead, wielding scavenged contraptions. Choose for an eerie twist in your fantasy quest."
+    },
+    "4": {
+        "name": "Inferno Cranium",
+        "description": " A blazing skull, wreathed in eternal flames. Opt for a scorching companion on your fiery journey through the realms of fantasy."
+    },
+    "5": {
+        "name": "Commoner",
+        "description": " An unassuming figure with a commonplace appearance, concealing extraordinary power. Choose for a surprising force to be reckoned with on your heroic quest."
+    },
+    "6": {
+        "name": "Cosmic Voyager",
+        "description": " A human with an otherworldly presence, marked by celestial origins. Select for an unearthly adventure in the cosmic realms of your fantasy world."
+    },
+    "7": {
+        "name": "Crimson Guardian",
+        "description": " A superhero clad in a sleek red suit, armed with valor and a burning determination to defend. Choose for a fiery force against injustice in your epic tale."
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "0": {
+        "name": "Ignis Cleaver",
+        "description": "An axe ablaze with relentless flames, channeling the fury of a dragon's breath. Select this scorching weapon for a devastating and fiery onslaught in your epic fantasy adventure.",
+        "attack": "Infernal Cleave"
+    },
+    "1": {
+        "name": "Crescent",
+        "description": "A sleek, curved dagger with an obsidian edge, perfect for silent strikes in the cloak of darkness. Choose this clandestine blade for swift and deadly precision in your fantasy quest.",
+        "attack": "Umbral Dance"
+    },
+    "2": {
+        "name": "Inferno",
+        "description": "A sickle ablaze with roaring flames, designed to reap chaos in its scorching wake. Select this fiery implement for a relentless and incendiary assault in your fantastical journey.",
+        "attack": "Blaze Reap"
+    },
+    "3": {
+        "name": "Emberblade",
+        "description": " A sword engulfed in relentless flames, radiating both heat and the power to vanquish darkness. Choose this scorching weapon for a blazing path through your heroic adventure.",
+        "attack": "Solar Flare"
+    },
+    "4": {
+        "name": "Solar Khopesh",
+        "description": "A mystical Egyptian weapon with twin blades, harnessing the power of the sun and moon. Opt for this divine pair for a balanced and radiant prowess in your mythical journey.",
+        "attack": "Celestial Dance"
+    },
+    "5": {
+        "name": "Demonic Talon",
+        "description": "A devilishly crafted sword with twisted, blackened steel and malevolent runes. Choose this accursed blade for a dark and formidable power in the heart of your demonic quest.",
+        "attack": "Ignition Slash"
+    }
+}

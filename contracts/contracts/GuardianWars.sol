@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
 import "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol";
@@ -6,12 +6,18 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
 contract GuardianWars is AutomationCompatibleInterface, VRFConsumerBaseV2 {
+    event PlayersInitialized(bool initialized);
+    event RandomnessGenerated(bool generated);
+    event GameStarted(bool started);
+    event GameEnded(bool ended);
+
     struct combat {
         uint256 characterId;
         uint256 weaponId;
     }
 
     uint8 private gameStarted = 0;
+    bool private playersInitialized = false;
     address[] private players;
 
     mapping(address => combat) playerToCombat;
@@ -35,16 +41,45 @@ contract GuardianWars is AutomationCompatibleInterface, VRFConsumerBaseV2 {
         );
     }
 
+    function isGameStarted() external view returns (bool) {
+        return (players.length == 2);
+    }
+
+    function arePlayersInitialized() external view returns (bool) {
+        return playersInitialized;
+    }
+
+    function getCharacters()
+        external
+        view
+        returns (combat memory, combat memory)
+    {
+        require(players.length == 2);
+        require(msg.sender == players[0] || msg.sender == players[1]);
+        combat memory player1 = playerToCombat[players[0]];
+        combat memory player2 = playerToCombat[players[1]];
+        return (player1, player2);
+    }
+
+    function getRandomness() external view returns (uint256) {
+        require(players.length == 2);
+        if (msg.sender == players[0]) return randomness1;
+        else if (msg.sender == players[1]) return randomness2;
+        return 0;
+    }
+
     function joinGame() external {
         players.push(msg.sender);
         gameStarted++;
+        if (gameStarted == 2) emit GameStarted(true);
     }
 
     function submitChoices(uint8[] memory choices) external {
+        require(players.length == 2);
         require(msg.sender == players[0] || msg.sender == players[1]);
-        require(gameStarted >= 4);
+        require(gameStarted >= 4 && gameStarted<6);
         gameStarted++;
-        if (gameStarted == 6) {
+        if (gameStarted == 6 && players[1] == msg.sender) {
             gameStarted = 0;
             uint256 score2 = 0;
             for (uint256 i = 0; i < choices.length; i++) {
@@ -52,10 +87,11 @@ contract GuardianWars is AutomationCompatibleInterface, VRFConsumerBaseV2 {
                     ((choices[i] * randomness2) % (10 ** (i + 1))) /
                     (10 ** i);
                 uint256 weight = (randomness3 % (10 ** (i + 1))) / (10 ** i);
-                if (weight % 2 == 1) score2 -= weight;
+                if (weight % 2 == 1 && score2 >= weight) score2 -= weight;
                 else score2 += weight;
             }
             win = (score1 > score2) ? 1 : 2;
+            emit GameEnded(true);
             return;
         }
         for (uint256 i = 0; i < choices.length; i++) {
@@ -63,7 +99,7 @@ contract GuardianWars is AutomationCompatibleInterface, VRFConsumerBaseV2 {
                 ((choices[i] * randomness1) % (10 ** (i + 1))) /
                 (10 ** i);
             uint256 weight = (randomness3 % (10 ** (i + 1))) / (10 ** i);
-            if (weight % 2 == 0) score1 -= weight;
+            if (weight % 2 == 0 && score1 >= weight) score1 -= weight;
             else score1 += weight;
         }
     }
@@ -106,10 +142,23 @@ contract GuardianWars is AutomationCompatibleInterface, VRFConsumerBaseV2 {
                 _randomWords[1] % 8,
                 _randomWords[1] % 6
             );
+            playersInitialized = true;
+            emit PlayersInitialized(true);
         } else if (action == 4) {
             randomness1 = _randomWords[0];
             randomness2 = _randomWords[1];
             randomness3 = _randomWords[2];
+            emit RandomnessGenerated(true);
         }
+    }
+
+    function reset() external {
+        gameStarted = 0;
+        players = new address[](0);
+        playersInitialized = false;
+        randomness1 = 0;
+        randomness2 = 0;
+        randomness3 = 0;
+        win = 0;
     }
 }

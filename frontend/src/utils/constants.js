@@ -1279,3 +1279,262 @@ export const ccipDnsAbi = [
         "type": "receive"
     }
 ]
+
+export const guardianWars = "0x46b106c53d44d7C6990E5843B34eE041C6C85FED"
+export const guardianWarsAbi = [
+    {
+        "inputs": [
+            {
+                "internalType": "uint64",
+                "name": "_sid",
+                "type": "uint64"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "have",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "want",
+                "type": "address"
+            }
+        ],
+        "name": "OnlyCoordinatorCanFulfill",
+        "type": "error"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "ended",
+                "type": "bool"
+            }
+        ],
+        "name": "GameEnded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "started",
+                "type": "bool"
+            }
+        ],
+        "name": "GameStarted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "initialized",
+                "type": "bool"
+            }
+        ],
+        "name": "PlayersInitialized",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "generated",
+                "type": "bool"
+            }
+        ],
+        "name": "RandomnessGenerated",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "arePlayersInitialized",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes",
+                "name": "",
+                "type": "bytes"
+            }
+        ],
+        "name": "checkUpkeep",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "upkeepNeeded",
+                "type": "bool"
+            },
+            {
+                "internalType": "bytes",
+                "name": "",
+                "type": "bytes"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getCharacters",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "characterId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "weaponId",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct GuardianWars.combat",
+                "name": "",
+                "type": "tuple"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "characterId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "weaponId",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct GuardianWars.combat",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getRandomness",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "isGameStarted",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "joinGame",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes",
+                "name": "",
+                "type": "bytes"
+            }
+        ],
+        "name": "performUpkeep",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "randomWords",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "rawFulfillRandomWords",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "reset",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8[]",
+                "name": "choices",
+                "type": "uint8[]"
+            }
+        ],
+        "name": "submitChoices",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "win",
+        "outputs": [
+            {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
