@@ -1280,7 +1280,7 @@ export const ccipDnsAbi = [
     }
 ]
 
-export const guardianWars = "0x46b106c53d44d7C6990E5843B34eE041C6C85FED"
+export const guardianWars = "0x691756021aFc6c4456436EfFDA50c03ac387AdE2"
 export const guardianWarsAbi = [
     {
         "inputs": [
@@ -1400,6 +1400,19 @@ export const guardianWarsAbi = [
     },
     {
         "inputs": [],
+        "name": "gameDurationEnded",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "getCharacters",
         "outputs": [
             {
@@ -1455,7 +1468,33 @@ export const guardianWarsAbi = [
     },
     {
         "inputs": [],
+        "name": "getWinner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "isGameStarted",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "isPlayer2",
         "outputs": [
             {
                 "internalType": "bool",
